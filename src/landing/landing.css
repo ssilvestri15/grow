@@ -1,0 +1,66 @@
+.material-symbols-outlined {
+  transition: color 0.3s ease-in-out;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.Landing {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  background-color: #f5f5f5;
+}
+
+.Landing a.logo_title {
+  color: black;
+  font-family: "Montserrat Alternates", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 4.5em;
+}
+
+.Landing a.subtitle {
+  color: black;
+  font-family: "Montserrat Alternates", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: large;
+}
+
+.btn_next {
+  background-color: transparent; /* Initial color */
+  border: 2px solid black; /* Initial border */
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 24px;
+  border-radius: 50%; /* Make it a circle */
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out,
+    border 0.3s ease-in-out;
+  width: 60px; /* Make the button circular */
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 100px;
+}
+
+.btn_next .arrow {
+  font-size: 24px;
+  color: black;
+}
+
+.btn_next:hover {
+  transform: scale(1.1);
+  background-color: #d94e32; /* Tonal shift on hover */
+  border: none;
+}
+
+.btn_next:hover .arrow {
+  color: #f5f5f5;
+}

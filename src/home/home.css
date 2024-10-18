@@ -1,0 +1,82 @@
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  color: #333;
+}
+
+/* Common Header */
+.header {
+  font-size: 2em;
+  padding: 20px;
+  background-color: #fff;
+  text-align: left;
+  font-weight: bold;
+  padding-left: 50px;
+}
+
+/* Carousel Page */
+.carousel-page {
+  margin: 20px;
+}
+
+.carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel_slider {
+  width: 100%;
+  padding: 20px;
+}
+
+.carousel_slider img {
+  width: 100%;
+  height: auto;
+}
+
+.carousel-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 4em;
+  color: white;
+  font-weight: bold;
+}
+
+.section {
+  margin-top: 20px;
+}
+
+.section a.section_title {
+  display: block;
+  width: 100%;
+  text-align: start;
+  font-weight: 600;
+  font-size: large;
+}
+
+.section_product_list {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+
+  /* Set a fixed height for the scrollable area */
+  height: fit-content; /* Adjust this as needed */
+  overflow-x: auto; /* Allows horizontal scrolling */
+  overflow-y: hidden; /* Prevents vertical scrolling */
+
+}
+
+.product-item {
+  margin: 10px;
+}
+
+.product-item img {
+  width: 150px;
+  height: auto;
+  border-radius: 10px;
+}

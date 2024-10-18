@@ -1,0 +1,167 @@
+/* Crowdfunding Page */
+.crowdfunding-page {
+}
+
+.panels {
+  display: flex;
+  flex-direction: column;
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.panels .left {
+  width: -webkit-fill-available;
+  padding: 20px;
+}
+
+.panels .right {
+  width: -webkit-fill-available;
+  background: #e4dada;
+}
+.back-button {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 2vw;
+  cursor: pointer;
+  margin-right: 20px;
+  font-weight: 600;
+}
+
+.back-button:hover {
+  color: #ff5722;
+}
+
+.crowdfunding-content {
+  display: flex;
+  flex-direction: column;
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+  justify-content: start;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.project_image {
+  display: none;
+}
+
+.project_info_1 {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.project_title {
+  font-family: "Euclid Circular B", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 5vw;
+  white-space: pre-line;
+  text-align: justify;
+  text-justify: inter-word;
+  margin: 0px;
+}
+
+.project_info_2 {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.project_info_3 {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.project_description {
+  font-family: "Euclid Circular B", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1vw;
+  white-space: pre-line;
+  text-align: justify;
+  text-justify: inter-word;
+  margin: 0px;
+}
+
+.progress-bar {
+  margin: 20px 0;
+  width: 100%;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+  height: 40px;
+  overflow: hidden;
+  border: 1px black solid;
+}
+
+.progress {
+  height: 100%;
+  background-color: #ff5722;
+  border-radius: 20px;
+  text-align: end;
+  line-height: 40px;
+}
+
+.progress-text {
+  color: black;
+  font-family: "Euclid Circular B", sans-serif;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.right_section_title {
+    font-family: 'Ecilid Circular B', sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 1.5vw;
+    margin: 0px;
+}
+
+.section_allcontr {
+    margin-top: 20px;
+}
+
+@media (min-width: 1010px) {
+  .project_image {
+    display: block;
+  }
+
+  .crowdfunding-content {
+    flex-direction: row;
+  }
+
+  .panels {
+    flex-direction: row;
+  }
+
+  .panels .left {
+    width: 70%;
+  }
+
+  .panels .right {
+    width: 30%;
+    margin-left: 20px;
+    height: 100vh;
+
+  }
+
+  .project_info_1 {
+    width: 30%;
+    margin-right: 20px;
+  }
+
+  .project_info_2 {
+    width: 70%;
+    margin-left: 20px;
+  }
+
+  .project_info_3 {
+    width: -webkit-fill-available;
+    padding: 20px;
+    height: -webkit-fill-available;
+  }
+}

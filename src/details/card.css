@@ -1,0 +1,85 @@
+.contribution_card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: -webkit-fill-available;
+  height: fit-content;
+  border-radius: 20px;
+  background-color: #c7bebe;
+  padding: 20px;
+  margin-top: 10px;
+}
+
+.contribution_card .left_c {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+  width: 80%;
+}
+
+.contribution_card .right_c {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin-left: 10px;
+  width: 20%;
+}
+
+.tier_name {
+  font-family: "Euclid Circular B", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 1vw;
+  color: #624a3c;
+  margin: 0px;
+}
+
+.tier_description {
+  font-family: "Euclid Circular B", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 0.8vw;
+  color: black;
+  margin: 0px;
+}
+
+.tier_price {
+  font-family: "Euclid Circular B", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 2vw;
+  color: #d94e32;
+  margin: 0px;
+}
+
+.wallett_title {
+  font-family: "Euclid Circular B", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 0.8vw;
+  color: black;
+  margin: 0px;
+}
+
+.wallett_addr {
+  font-family: "Euclid Circular B", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 0.8vw;
+  color: black;
+  margin: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.wallett_contr_amount {
+  font-family: "Euclid Circular B", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 1vw;
+  color: #d94e32;
+  margin: 0px;
+}

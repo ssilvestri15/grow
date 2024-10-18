@@ -1,0 +1,13 @@
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    align-items: center;
+}
+
+.toolbar .logo_title {
+    font-family: "Montserrat Alternates", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 2em;
+}
