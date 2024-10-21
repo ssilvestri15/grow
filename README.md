@@ -1,5 +1,7 @@
 # Grow - Decentralized Crowdfunding Platform
 
+![Grow Logo](https://github.com/ssilvestri15/grow/blob/main/banner.png)
+
 ## Overview
 
 This project is a decentralized crowdfunding platform built on the **Blackhat Blockchain** using **React** for the frontend. The platform allows users to create, contribute to, and manage crowdfunding campaigns in a fully decentralized and transparent manner, leveraging the security and trustlessness of blockchain technology.
@@ -43,17 +45,18 @@ To run this project locally, you need to have the following installed:
    npm install
    ```
 
-### Running the Project
+### Run HardHat Testing Network
 
-1. Start the React development server:
+1. Run HardHat Network:
 
    ```bash
-   npm start
+   npx hardhat node
    ```
-
-2. Open your browser and navigate to `http://localhost:3000` to interact with the app.
+DON'T close the terminal.
 
 ### Smart Contracts
+
+On a new terminal
 
 1. Compile the smart contracts:
 
@@ -68,6 +71,18 @@ To run this project locally, you need to have the following installed:
    ```
 
 3. Update the contract addresses in the React frontend code (`src/config.js`) to point to your deployed contracts.
+
+### Running the Frontend Project
+
+1. Start the React development server:
+
+   ```bash
+   cd frontend
+   nmp install
+   npm start
+   ```
+
+2. Open your browser and navigate to `http://localhost:3000` to interact with the app.
 
 ### Connecting MetaMask
 
