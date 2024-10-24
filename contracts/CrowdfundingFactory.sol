@@ -3,7 +3,7 @@ pragma solidity 0.8.28;
 
 import "./Campaign.sol";
 import "./NFTFactory.sol";
-import "./ParticipationNFT.sol";
+import "./NFT.sol";
 
 contract CrowdfundingFactory {
 
@@ -37,7 +37,7 @@ contract CrowdfundingFactory {
         require(bytes(_nftSymbol).length > 0, "NFT symbol must not be empty");
 
         // Crea un nuovo contratto NFT per questa campagna
-        ParticipationNFT nftAddress = nftFactory.createNFTContract(_nftName, _nftSymbol);
+        address nftAddress = nftFactory.createNFTContract(_nftName, _nftSymbol);
 
         // Crea una nuova campagna con l'indirizzo del contratto NFT
         Campaign campaign = new Campaign(

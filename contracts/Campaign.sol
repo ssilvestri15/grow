@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import "./ParticipationNFT.sol";
+import "./NFT.sol";
 
 contract Campaign {
 
@@ -29,7 +29,7 @@ contract Campaign {
     mapping(address => DonationSummary) public donations;
     address[] public donorAddresses;
     uint256 public deadline;
-    ParticipationNFT public nftContract; //Contratto per la creazione di NFT dedicato alla campagna
+    NFT public nftContract; //Contratto per la creazione di NFT dedicato alla campagna
     bool public isClosed;
 
     event Donated(address indexed donor, uint256 amount);
@@ -45,7 +45,7 @@ contract Campaign {
         string memory _imagePosterUrl,
         uint256 _target,
         uint256 _duration, // Durata in giorni
-        ParticipationNFT _nftContract
+        address _nftContract
     ) {
         title = _title;
         description = _description;
@@ -57,7 +57,7 @@ contract Campaign {
         deadline = block.timestamp + (_duration * 86400); // Conversione giorni -> secondi
         currentAmount = 0;
         isClosed = false;
-        nftContract = _nftContract;
+        nftContract = NFT(_nftContract);
     }
 
     function donate() public payable {

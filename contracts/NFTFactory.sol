@@ -1,20 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import "./ParticipationNFT.sol";
+import "./NFT.sol";
 
 contract NFTFactory {
-    ParticipationNFT[] public nftContracts; // Lista dei contratti NFT creati
+    mapping (string => address) nftContracts;
     event NFTContractCreated(address nftAddress);
 
-    function createNFTContract(string memory _name, string memory _symbol) public returns (ParticipationNFT) {
-        ParticipationNFT nft = new ParticipationNFT(_name, _symbol);
-        nftContracts.push(nft);
+    function createNFTContract(string memory _name, string memory _symbol) public returns (address) {
+        string memory id = string.concat(_name, _symbol);
+        require(nftContracts[id] == address(0), "NFT contract already exists");
+        NFT nft = new NFT(_name, _symbol, address(this)); // Crea un nuovo contratto NFT
+        nftContracts[id] = address(nft); // Salva il contratto NFT appena creato
         emit NFTContractCreated(address(nft));
-        return nft; // Restituisce il nuovo contratto NFT
-    }
-
-    function getNFTContracts() public view returns (ParticipationNFT[] memory) {
-        return nftContracts; // Restituisce tutti i contratti NFT creati
+        return address(nft); // Restituisce il nuovo contratto NFT
     }
 }
