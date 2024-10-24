@@ -11,7 +11,7 @@ contract NFTFactory {
         ParticipationNFT nft = new ParticipationNFT(_name, _symbol);
         nftContracts.push(nft);
         emit NFTContractCreated(address(nft));
-        return nft; // Restituisce l'indirizzo del nuovo contratto NFT
+        return nft; // Restituisce il nuovo contratto NFT
     }
 
     function getNFTContracts() public view returns (ParticipationNFT[] memory) {
