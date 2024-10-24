@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/ssilvestri15/grow#readme",
   "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.8",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "hardhat": "^2.22.14"
   }

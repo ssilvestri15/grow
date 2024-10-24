@@ -3,14 +3,13 @@ pragma solidity 0.8.28;
 
 import "./Campaign.sol";
 import "./NFTFactory.sol";
-import "./NFT.sol";
 
 contract CrowdfundingFactory {
 
     Campaign[] public campaigns;
     NFTFactory public nftFactory;
     
-    event CampaignCreated(address campaignAddress, string title, address creator);
+    event CampaignCreated(string title);
 
     constructor() {
         nftFactory = new NFTFactory();
@@ -53,7 +52,7 @@ contract CrowdfundingFactory {
         );
 
         campaigns.push(campaign);
-        emit CampaignCreated(address(campaign), _title, msg.sender);
+        emit CampaignCreated(_title);
     }
 
     function getCampaigns() public view returns (Campaign[] memory) {
