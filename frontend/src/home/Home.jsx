@@ -4,10 +4,14 @@ import Toolbar from "../toolbar/toolbar";
 import SlideShow from "../slideshow/slideshow";
 
 import { useNavigate } from "react-router-dom";
+import { useWalletManager, WALLET_ERRORS } from "../utils/WalletManager";
+
 
 
 function Home() {
   const [showCrowdfunding, setShowCrowdfunding] = useState(false); // To toggle between pages
+  const { walletStatus, connectWallet } = useWalletManager();
+
 
   let navigate = useNavigate();
   const handleProductClick = () => {
@@ -18,7 +22,7 @@ function Home() {
   return (
     <div className="App">
       <div className="carousel-page">
-          <Toolbar />
+          <Toolbar walletStatus={walletStatus} connectWallet={connectWallet} />
           <div className="carousel">
             <div className="carousel_slider">
               <SlideShow />

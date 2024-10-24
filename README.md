@@ -70,7 +70,7 @@ On a new terminal
    npx hardhat run scripts/deploy.js --network blackhat-testnet
    ```
 
-3. Update the contract addresses in the React frontend code (`src/config.js`) to point to your deployed contracts.
+3. Update the contract addresses in the React frontend code (`frontend/src/config.js`) to point to your deployed contracts.
 
 ### Running the Frontend Project
 

@@ -59,7 +59,6 @@ function Details() {
                     <span className="progress-text">{progress}$</span>
                   </div>
                 </div>
-                <p>Milestone 1</p>
               </div>
             </div>
           </div>

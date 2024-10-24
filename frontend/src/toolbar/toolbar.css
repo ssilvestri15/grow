@@ -1,13 +1,42 @@
 .toolbar {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .toolbar .logo_title {
-    font-family: "Montserrat Alternates", sans-serif;
-    font-weight: 700;
-    font-style: normal;
-    font-size: 2em;
+  font-family: "Montserrat Alternates", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 2em;
+}
+
+.toolbar .wallet_div {
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  background-color: #141414;
+  border-radius: 10px;
+}
+
+.toolbar .wallet_div.error {
+  color: white;
+  background-color: #aa0000;
+}
+
+.toolbar .wallet_div.loading {
+  background-color: transparent;
+}
+
+.toolbar .wallet_div .btn_text {
+  margin-left: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  margin-right: 2px;
 }

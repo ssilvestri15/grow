@@ -24,7 +24,7 @@
   background: none;
   border: none;
   color: #333;
-  font-size: 2vw;
+  font-size: 4vw;
   cursor: pointer;
   margin-right: 20px;
   font-weight: 600;
@@ -45,7 +45,10 @@
 }
 
 .project_image {
-  display: none;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  border-radius: 2vh;
 }
 
 .project_info_1 {
@@ -63,6 +66,7 @@
   text-align: justify;
   text-justify: inter-word;
   margin: 0px;
+  margin-top: 20px;
 }
 
 .project_info_2 {
@@ -74,14 +78,14 @@
 .project_info_3 {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: -webkit-fill-available;
 }
 
 .project_description {
   font-family: "Euclid Circular B", sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: 1vw;
+  font-size: 3vw;
   white-space: pre-line;
   text-align: justify;
   text-justify: inter-word;
@@ -114,20 +118,37 @@
 }
 
 .right_section_title {
-    font-family: 'Ecilid Circular B', sans-serif;
-    font-weight: 600;
-    font-style: normal;
-    font-size: 1.5vw;
-    margin: 0px;
+  font-family: "Ecilid Circular B", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 3vw;
+  margin: 0px;
+}
+
+.section_ycontr {
+  margin: 20px;
 }
 
 .section_allcontr {
-    margin-top: 20px;
+  margin: 20px;
 }
 
 @media (min-width: 1010px) {
+
+  .back-button {
+    font-size: 2vw;
+  }
+
   .project_image {
     display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1/1;
+    border-radius: 2vh;
+  }
+
+  .project_description {
+    font-size: 1vw;
   }
 
   .crowdfunding-content {
@@ -146,7 +167,6 @@
     width: 30%;
     margin-left: 20px;
     height: 100vh;
-
   }
 
   .project_info_1 {
@@ -163,5 +183,18 @@
     width: -webkit-fill-available;
     padding: 20px;
     height: -webkit-fill-available;
+  }
+
+  .section_ycontr {
+    margin: 0px;
+  }
+
+  .section_allcontr {
+    margin: 0px;
+    margin-top: 20px;
+  }
+
+  .right_section_title {
+    font-size: 1.5vw;
   }
 }

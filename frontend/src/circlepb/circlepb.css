@@ -1,0 +1,20 @@
+.circle-background {
+    stroke-linecap: round;
+  }
+  
+  .circle-progress {
+    stroke-linecap: round; /* This makes the ends of the progress rounded */
+    stroke-dashoffset: 0;
+    animation: spin 2s linear infinite;
+    transform-origin: 50% 50%;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  

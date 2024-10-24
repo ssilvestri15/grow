@@ -17,6 +17,6 @@
   "homepage": "https://github.com/ssilvestri15/grow#readme",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.13"
+    "hardhat": "^2.22.14"
   }
 }
