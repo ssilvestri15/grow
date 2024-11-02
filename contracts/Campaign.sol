@@ -5,7 +5,6 @@ import "./NFT.sol";
 
 contract Campaign {
 
-
     struct DonationSummary {
         address donor;
         uint256 totalAmount;
@@ -24,17 +23,20 @@ contract Campaign {
     address public creator;
     string public imageBannerUrl;
     string public imagePosterUrl;
-    uint256 public target;
+    uint256 public target; // Obiettivo in Ether
     uint256 public currentAmount;
     mapping(address => DonationSummary) public donations;
     address[] public donorAddresses;
+    Donation[] public failedRefounds;
     uint256 public deadline;
+    uint256 public startDate;
     NFT public nftContract; //Contratto per la creazione di NFT dedicato alla campagna
     bool public isClosed;
 
     event Donated(address indexed donor, uint256 amount);
     event FundsWithdrawn(address indexed owner, uint256 amount);
     event Refunded(address indexed donor, uint256 amount);
+    event CampaignClosed(string title);
 
     constructor(
         string memory _title,
@@ -54,7 +56,8 @@ contract Campaign {
         imageBannerUrl = _imageBannerUrl;
         imagePosterUrl = _imagePosterUrl;
         target = _target;
-        deadline = block.timestamp + (_duration * 86400); // Conversione giorni -> secondi
+        startDate = block.timestamp;
+        deadline = startDate + (_duration * 86400); // Conversione giorni -> secondi
         currentAmount = 0;
         isClosed = false;
         nftContract = NFT(_nftContract);
@@ -84,7 +87,7 @@ contract Campaign {
         require(msg.sender == owner, "Only the owner can withdraw funds");
         require(block.timestamp >= deadline,"The campaign has not yet expired");
         require(currentAmount > target, "The target has not been reached");
-        require(msg.value == ((25*target)/100), "You need to send 25% of the target to withdraw funds");
+        require(msg.value == 0.2 ether, "You need to 0.2 ether to withdraw funds");
 
         uint256 amount = currentAmount;
         currentAmount = 0;
@@ -96,20 +99,52 @@ contract Campaign {
         emit FundsWithdrawn(owner, amount);
     }
 
-    function refund() public {
+    function closeCampaignAndRefund() public {
         require(!isClosed, "The campaign is already closed");
-        require(block.timestamp < deadline,"The campaign has not yet expired");
-        require(currentAmount > target,"Goal met, you cannot request a refund");
-        require(donations[msg.sender].donor == msg.sender, "Don't be a smart-ass");
-        require(donations[msg.sender].totalAmount > 0, "No amount to be repaid");
-        uint256 amountToRefund = donations[msg.sender].totalAmount;
-        donations[msg.sender].totalAmount = 0; // Impedisce il doppio rimborso
+        require(msg.sender == owner || msg.sender == creator, "You can't close this campaign");
+        isClosed = true;
 
-        (bool sent, ) = payable(msg.sender).call{value: amountToRefund}("");
-        require(sent, "Failed to send Ether");
+        uint256 failed = 0;
 
-        emit Refunded(msg.sender, amountToRefund);
+        for (uint256 i = 0; i < donorAddresses.length; i++) {
+            uint256 amountToRefund = donations[donorAddresses[i]].totalAmount;
+            donations[donorAddresses[i]].totalAmount = 0;
+            (bool sent, ) = payable(donorAddresses[i]).call{value: amountToRefund}("");
+            if (!sent) {
+                failed++;
+                failedRefounds.push(Donation(donorAddresses[i], amountToRefund, block.timestamp));
+            }
+        }
+
+        require(failed == 0, "Failed to refund all donors");
+
+        emit CampaignClosed(title);
     }
+
+    function retryRefund() public {
+        require(msg.sender == owner || msg.sender == creator, "Only the owner or the creator can retry refunds");
+        require(failedRefounds.length > 0, "No failed refunds to retry");
+
+        uint256 failed = 0;
+
+        // Iterate in reverse to safely remove elements
+        for (uint256 i = failedRefounds.length; i > 0; i--) {
+            uint256 index = i - 1;
+            uint256 amountToRefund = failedRefounds[index].amount;
+            (bool sent, ) = payable(failedRefounds[index].donor).call{value: amountToRefund}("");
+
+            if (!sent) {
+                failed++;
+            } else {
+                // Remove the refunded donation from the failed refunds list
+                failedRefounds[index] = failedRefounds[failedRefounds.length - 1];
+                failedRefounds.pop();
+            }
+        }
+
+        require(failed == 0, "Failed to refund all donors");
+    }
+
 
     function getUserDonations(address userAddress) public view returns (Donation[] memory) {
         return donations[userAddress].donations;
@@ -117,51 +152,22 @@ contract Campaign {
 
 
     // Generate a pseudo-random number
-    function generateRandomNumber(uint256 min, uint256 max) internal view returns (uint256) {
-        require(max > min, "Max must be greater than min");
-
-        // Use block.timestamp, block.difficulty, and the sender's address for randomness
-        uint256 randomHash = uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao, msg.sender)));
-        
-        // Scale the random number to the desired range
-        return (randomHash % (max - min + 1)) + min;
+    function generateRandomNumber(uint256 max) internal view returns (uint256) {// Genera un numero pseudocasuale compreso tra 0 e max
+        return uint256(keccak256(abi.encodePacked(block.prevrandao, msg.sender))) % max;
     }
 
     function getRandomDonations(uint256 count) public view returns (Donation[] memory) {
         // Ensure the number of requested donations is not greater than the available donations
         require(count > 0 && count <= totalDonations(), "Invalid count");
-
         Donation[] memory randomDonations = new Donation[](count);
-        uint256 totalDonors = donorAddresses.length;
-        uint256 selectedCount = 0;
+        uint256 selected = 0;
 
-        // Track indices already selected to avoid duplicates
-        uint256[] memory selectedIndices = new uint256[](count);
-
-        while (selectedCount < count) {
-            uint256 randomIndex = generateRandomNumber(0, totalDonors - 1);
-            bool alreadySelected = false;
-
-            // Check if this index has already been selected
-            for (uint256 i = 0; i < selectedCount; i++) {
-                if (selectedIndices[i] == randomIndex) {
-                    alreadySelected = true;
-                    break;
-                }
-            }
-
-            // If the random index is unique, add the donation
-            if (!alreadySelected) {
-                selectedIndices[selectedCount] = randomIndex;
-                Donation[] memory donationsFromDonor = donations[donorAddresses[randomIndex]].donations;
-
-                // Randomly select a donation from this donor
-                if (donationsFromDonor.length > 0) {
-                    uint256 donationRandomIndex = generateRandomNumber(0, donationsFromDonor.length - 1);
-                    randomDonations[selectedCount] = donationsFromDonor[donationRandomIndex];
-                    selectedCount++;
-                }
-            }
+        while (selected < count) {
+            uint256 randomIndex = generateRandomNumber(donorAddresses.length);
+            DonationSummary storage summary = donations[donorAddresses[randomIndex]];
+            uint256 randomDonationIndex = generateRandomNumber(summary.donations.length);
+            randomDonations[selected] = summary.donations[randomDonationIndex];
+            selected++;
         }
 
         return randomDonations;
@@ -173,6 +179,15 @@ contract Campaign {
             total += donations[donorAddresses[i]].donations.length;
         }
         return total;
+    }
+
+    function getNftContract() public view onlyOwner returns (address) {
+        return address(nftContract);
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can call this function");
+        _;
     }
 
 }

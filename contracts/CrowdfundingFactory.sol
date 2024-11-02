@@ -18,15 +18,15 @@ contract CrowdfundingFactory {
     function createCampaign(
         string memory _title,
         string memory _description,
-        string memory _urlImagePoster,
         string memory _urlImageBanner,
+        string memory _urlImagePoster,
         string memory _nftName,
         string memory _nftSymbol,
         uint256 _target,
         uint256 _duration
     ) public payable {
         require(msg.value == 0.2 ether, "You need to send exactly 0.2 Ether to create a campaign");
-        require(_target > 0, "Target must be greater than zero");
+        require(_target > 0.4 ether, "Target must be greater than 0.4 ether");
         require(_duration > 0, "Duration must be at least one day");
         require(bytes(_title).length > 0, "Title must not be empty");
         require(bytes(_description).length > 0, "Description must not be empty");
@@ -44,14 +44,16 @@ contract CrowdfundingFactory {
             _description,
             msg.sender,
             address(this),
-            _urlImagePoster,
             _urlImageBanner,
+            _urlImagePoster,
             _target,
             _duration,
             nftAddress
         );
 
         campaigns.push(campaign);
+        NFT nft = NFT(nftAddress);
+        nft.setOwner(address(campaign));
         emit CampaignCreated(_title);
     }
 

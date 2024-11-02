@@ -5,17 +5,22 @@ contract NFT {
 
     string public name;
     string public symbol;
-    address contractOwner;
+    address public contractCreator;
+    address public contractOwner;
     mapping(address => bytes32) public tokenOwner;
     mapping(bytes32 => bool) public  tokenExists;
-
+    
     event Minted(bytes32 token, address owner);
     event Transfer(address from, address to, bytes32 token);
     event Burned(bytes32 token);
 
-    constructor(string memory _name, string memory _symbol, address _contractOwner) {
+    constructor(string memory _name, string memory _symbol, address _contractCreator) {
         name = _name;
         symbol = _symbol;
+        contractCreator = _contractCreator;
+    }
+
+    function setOwner(address _contractOwner) external onlyCreator {
         contractOwner = _contractOwner;
     }
 
@@ -52,6 +57,11 @@ contract NFT {
 
     modifier onlyOwner() {
         require(contractOwner == msg.sender, "Caller can't create NFT");
+        _;   
+    }
+
+    modifier onlyCreator() {
+        require(contractCreator == msg.sender, "Caller can't edit this parameter of the NFT");
         _;   
     }
 }

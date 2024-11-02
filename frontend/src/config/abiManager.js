@@ -1,0 +1,13 @@
+export const crowdfundingFactoryABI = [
+    "function getCampaigns() view returns (address[])"
+]
+
+export const campaignABI = [
+    "function title() view returns (string)",
+    "function description() view returns (string)",
+    "function imageBannerUrl() view returns (string)",
+    "function imagePosterUrl() view returns (string)",
+    "function startDate() view returns (uint256)",
+    "function target() view returns (uint256)",
+    "function currentAmount() view returns (uint256)",
+]

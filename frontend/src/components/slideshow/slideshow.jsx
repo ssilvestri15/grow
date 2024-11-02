@@ -1,33 +1,21 @@
 import React, { useState, useEffect } from "react";
 import "./slideshow.css";
 
-const slides = [
-  {
-    url: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80",
-    alt: "Lofree Product",
-    startAt: "Start Tomorrow",
-    Description: "Laguna Crowdfunding",
-  },
-  {
-    url: "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80",
-    alt: "Lofree Product",
-    startAt: "Start late 2025",
-    Description: "Ocean Crowdfunding",
-  },
-  {
-    url: "your-product-image.png",
-    alt: "Lofree Product",
-    startAt: "Start on 16/10",
-    Description: "PearPhone Crowdfunding",
-  },
-];
+import { useNavigate } from "react-router-dom";
 
-function SlideShow() {
+function SlideShow({ slides }) {
+
   const [currentSlides, setCurrentSlides] = useState(slides);
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  let navigate = useNavigate();
+  const handleProductClick = (id, address) => {
+    let path = `/project/${id}`; 
+    navigate(path, { state: { address } });
+  };
 
   // Update dimensions on resize
   useEffect(() => {
@@ -54,6 +42,10 @@ function SlideShow() {
     return () => clearInterval(interval);
   }, [currentSlides]);
 
+  if (slides.length === 0) {
+    return <div></div>;
+  }
+
   const len = currentSlides.length - 1 > 0 ? currentSlides.length - 1 : 0;
 
   // Responsive size calculations based on screen size
@@ -72,8 +64,8 @@ function SlideShow() {
         {currentSlides.map((slide, index) => (
           <img
             key={index}
-            src={slide.url}
-            alt={slide.alt}
+            src={slide.bannerUrl}
+            alt={slide.title}
             className="layer"
             style={{
               left: `${index * 20}px`, // Increase by 20px for each index
@@ -81,14 +73,15 @@ function SlideShow() {
               width: `${baseWidth}px`,
               height: `${baseHeight}px`,
             }}
+            onClick={() => handleProductClick(slide.title.replaceAll(" ", "").toLowerCase(), slide.address)}
           />
         ))}
       </div>
 
       <div className="details">
-        <a className="selected_startat">{currentSlides[len].startAt}</a>
+        <a className="selected_startat">{"Start on "+currentSlides[len].startDate}</a>
         <a className="selected_description">
-          {currentSlides[len].Description.replaceAll(" ", "\n")}
+          {currentSlides[len].title.replaceAll(" ", "\n")}
         </a>
       </div>
     </div>

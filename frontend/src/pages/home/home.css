@@ -63,7 +63,7 @@
 
 .section_product_list {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: flex-start;
@@ -117,7 +117,7 @@
   }
 
   .section_product_list {
-    justify-content: space-between;
+    justify-content: flex-start;
   }
 
 }

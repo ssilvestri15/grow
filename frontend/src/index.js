@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
-import Home from './home/Home';
-import Landing from './landing/Landing';
-import Details from './details/Details';
+import Home from './pages/home/Home';
+import Landing from './pages/landing/Landing';
+import Details from './pages/details/Details';
 import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter([
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/project/:id",
-    element: <Details />,
+    element: <Details />, //Want to pass the address to the Details component
   },
 ]);
 
