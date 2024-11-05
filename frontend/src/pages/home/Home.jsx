@@ -12,7 +12,8 @@ import { getCampaigns } from "../../utils/CrowdfundingManager";
 function Home() {
   const [showCrowdfunding, setShowCrowdfunding] = useState(false); // To toggle between pages
   const { walletStatus, connectWallet } = useWalletManager();
-  const [campaignsList, setCampaignsList] = useState([]);
+  const [campaignsListSlide, setCampaignsListSlide] = useState([]);
+  const [campaignsListMost, setCampaignsListMost] = useState([]);
   const [loading, setLoading] = useState(true);
 
   let navigate = useNavigate();
@@ -20,16 +21,17 @@ function Home() {
     let path = `/project/${id}`; 
     navigate(path, { state: { address } });
   };
-
   useEffect(() => {
     async function fetchCampaigns() {
       try {
         setLoading(true);
         const campaignsData = await getCampaigns();
-        setCampaignsList(campaignsData);
+        setCampaignsListSlide(campaignsData.slice(0, Math.min(3, campaignsData.length)));
+        setCampaignsListMost(campaignsData.slice(Math.min(3, campaignsData.length)));
       } catch (error) {
         console.error(error);
-        setCampaignsList([]);
+        setCampaignsListSlide([]);
+        setCampaignsListMost([]);
       } finally {
         setLoading(false);
       }
@@ -45,7 +47,7 @@ function Home() {
           { loading ? (
             <IndefiniteProgressBar width={64} height={64} stroke={6} color="#141414" />
           ) : (
-            campaignsList.length === 0 ? (
+            campaignsListSlide.length === 0 && campaignsListMost.lenght === 0 ? (
               <div className="no-campaigns">
                 <a>No campaigns available</a>
               </div>
@@ -53,21 +55,22 @@ function Home() {
               <div>
                 <div className="carousel">
                   <div className="carousel_slider">
-                    <SlideShow slides={campaignsList.slice(0, Math.min(3, campaignsList.length))} />
+                    <SlideShow slides={campaignsListSlide} />
                   </div>
                 </div>
                 <div className="section" id="most-wanted">
                   <a className="section_title">Most wanted</a>
                   <div className="section_product_list">
-                    {campaignsList
-                    .slice(Math.min(3, campaignsList.length))
+                    {campaignsListMost
                     .map((_, index) => (
                     <div
                       className="product-item"
                       key={index}
-                      onClick={() => handleProductClick(campaignsList[index].title.replaceAll(" ", "").toLowerCase(), campaignsList[index].address)}
+                      onClick={() => {
+                        handleProductClick(campaignsListMost[index].title.replaceAll(" ", "").toLowerCase(), campaignsListMost[index].address)}
+                      }
                     >
-                      <img src={campaignsList[index].posterUrl} alt={campaignsList[index].title+" Image"} />
+                      <img src={campaignsListMost[index].posterUrl} alt={campaignsListMost[index].title+" Image"} />
                     </div>
                   ))}
                   </div>

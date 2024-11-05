@@ -31,8 +31,8 @@ export async function getCampaigns() {
           address: campaigns[index],
           title: campaignTitle,
           description: campaignDescription,
-          bannerUrl: campaignPosterUrl,
-          posterUrl: campaignBannerUrl,
+          bannerUrl: campaignBannerUrl,
+          posterUrl: campaignPosterUrl,
           startDate: formatTimestamp(campaignStartDate),
         };
         campaignsDetails.push(campaignDetails);
