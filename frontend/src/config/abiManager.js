@@ -8,6 +8,8 @@ export const campaignABI = [
     "function imageBannerUrl() view returns (string)",
     "function imagePosterUrl() view returns (string)",
     "function startDate() view returns (uint256)",
-    "function target() view returns (uint256)",
+    "function targetAmount() view returns (uint256)",
     "function currentAmount() view returns (uint256)",
+    "function getUserDonations(address) view returns ((address, uint256, uint256)[])",
+    "function getDonorAddresses() view returns (address[])",
 ]

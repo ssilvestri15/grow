@@ -53,4 +53,60 @@ const smarthomeai = {
     duration: 95,
   }
 
-  module.exports = { smarthomeai, ecobattery, quantumwallet, aihealthcare, smartcitygrid };
+  const agritechAI = {
+    title: "AgriTechAI Crowdfunding",
+    description: "Introducing *AgriTechAI*, an advanced platform bringing AI-driven solutions to modern agriculture. Designed to help farmers increase crop yields and manage resources more efficiently, *AgriTechAI* leverages data analytics, machine learning, and real-time monitoring to optimize every stage of the farming process. Imagine precision agriculture that adapts to weather patterns, soil health, and crop needs autonomously—reducing waste and maximizing sustainability. With *AgriTechAI*, we're paving the way for a future where agriculture is not only more productive but also kinder to our planet. Join our crowdfunding campaign and support the next generation of sustainable farming.",
+    urlImageBanner: "https://i.pinimg.com/1200x/8f/d4/07/8fd4076687a65a06eed4e1e3948aef53.jpg",
+    urlImagePoster: "https://i.pinimg.com/1200x/30/8d/d9/308dd942178e5c3cbd95c0dac58b3b10.jpg",
+    nftName: "AgriTechNFT",
+    nftSymbol: "ATNFT",
+    target: ethers.parseEther("220"),
+    duration: 130,
+};
+
+const edtechAI = {
+    title: "EdTechAI Crowdfunding",
+    description: "Meet *EdTechAI*, a revolutionary platform designed to transform the learning experience through personalized, AI-driven education. By adapting content to individual learning styles and paces, *EdTechAI* makes education accessible, engaging, and effective for students worldwide. Imagine an education assistant that provides real-time feedback, suggests resources, and tracks progress automatically. *EdTechAI* integrates with schools and learning platforms, creating a seamless, interactive experience for both students and teachers. Support our crowdfunding journey and be part of shaping the future of education.",
+    urlImageBanner: "https://i.pinimg.com/1200x/5b/86/a8/5b86a866606f216db2b4c3e908e7585c.jpg",
+    urlImagePoster: "https://i.pinimg.com/1200x/64/e3/b6/64e3b608b1c3ac9122a8bd7b39dd9c8d.jpg",
+    nftName: "EdTechNFT",
+    nftSymbol: "ETNFT",
+    target: ethers.parseEther("160"),
+    duration: 100,
+};
+
+const cleanairTech = {
+    title: "CleanAirTech Crowdfunding",
+    description: "Introducing *CleanAirTech*, a cutting-edge air purification technology that brings clean, breathable air to urban environments. With rising pollution levels, *CleanAirTech* uses an AI-driven filtration system that adapts to real-time air quality data, purifying indoor and outdoor spaces alike. Ideal for homes, offices, and public spaces, this innovative system is designed to improve health outcomes and reduce pollution. Imagine breathing fresh air even in high-traffic areas. Support *CleanAirTech* in our crowdfunding campaign and help us make clean air accessible to everyone.",
+    urlImageBanner: "https://i.pinimg.com/1200x/c0/ad/69/c0ad69bbf4ef5f3240ac6ccb81fd266e.jpg",
+    urlImagePoster: "https://i.pinimg.com/1200x/f1/80/d9/f180d9b29700db8e0708e9314898ea42.jpg",
+    nftName: "CleanAirNFT",
+    nftSymbol: "CANFT",
+    target: ethers.parseEther("190"),
+    duration: 105,
+};
+
+const ecoWater = {
+    title: "EcoWater Crowdfunding",
+    description: "Introducing *EcoWater*, an innovative water purification system designed to make clean water accessible and sustainable. This advanced system uses AI to monitor water quality and adjust filtration levels automatically, reducing waste and promoting sustainable usage. Perfect for home, business, and emergency scenarios, *EcoWater* is easy to set up and uses eco-friendly materials. Imagine having access to fresh, purified water wherever you are. By supporting *EcoWater*, you're investing in a future where clean water is available to all. Join our campaign and make an impact in global water security.",
+    urlImageBanner: "https://i.pinimg.com/1200x/85/fc/d9/85fcd9d42de134bb0be5f8c8ab74303d.jpg",
+    urlImagePoster: "https://i.pinimg.com/1200x/bc/dd/01/bcdd0142a331e314c380fe25c10fa1bd.jpg",
+    nftName: "EcoWaterNFT",
+    nftSymbol: "EWNFT",
+    target: ethers.parseEther("210"),
+    duration: 115,
+};
+
+const recycleBot = {
+    title: "RecycleBot Crowdfunding",
+    description: "Introducing *RecycleBot*, a smart recycling system that helps communities and businesses manage waste effectively and sustainably. Using AI and robotics, *RecycleBot* automatically sorts, categorizes, and processes recyclables, minimizing human error and maximizing efficiency. Imagine a world where recycling is easy, accessible, and efficient—reducing landfill waste and supporting a circular economy. By supporting *RecycleBot*, you're joining a movement toward a cleaner, more sustainable future. Back our crowdfunding campaign and help us bring smart recycling solutions to every city.",
+    urlImageBanner: "https://i.pinimg.com/1200x/24/53/08/245308b57c02d7da32f44ab2d43da1b2.jpg",
+    urlImagePoster: "https://i.pinimg.com/1200x/24/77/5e/24775edbd344f70e0f9d40f779b815ba.jpg",
+    nftName: "RecycleBotNFT",
+    nftSymbol: "RBNFT",
+    target: ethers.parseEther("230"),
+    duration: 120,
+};
+
+
+module.exports = { smarthomeai, ecobattery, quantumwallet, aihealthcare, smartcitygrid, agritechAI, edtechAI, cleanairTech, ecoWater, recycleBot };

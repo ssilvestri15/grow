@@ -23,7 +23,7 @@ contract Campaign {
     address public creator;
     string public imageBannerUrl;
     string public imagePosterUrl;
-    uint256 public target; // Obiettivo in Ether
+    uint256 public targetAmount; // Obiettivo in Ether
     uint256 public currentAmount;
     mapping(address => DonationSummary) public donations;
     address[] public donorAddresses;
@@ -45,7 +45,7 @@ contract Campaign {
         address _creator,
         string memory _imageBannerUrl,
         string memory _imagePosterUrl,
-        uint256 _target,
+        uint256 _targetAmount,
         uint256 _duration, // Durata in giorni
         address _nftContract
     ) {
@@ -55,7 +55,7 @@ contract Campaign {
         creator = _creator;
         imageBannerUrl = _imageBannerUrl;
         imagePosterUrl = _imagePosterUrl;
-        target = _target;
+        targetAmount = _targetAmount;
         startDate = block.timestamp;
         deadline = startDate + (_duration * 86400); // Conversione giorni -> secondi
         currentAmount = 0;
@@ -86,7 +86,7 @@ contract Campaign {
     function withdrawFunds() payable public {
         require(msg.sender == owner, "Only the owner can withdraw funds");
         require(block.timestamp >= deadline,"The campaign has not yet expired");
-        require(currentAmount > target, "The target has not been reached");
+        require(currentAmount > targetAmount, "The targetAmount has not been reached");
         require(msg.value == 0.2 ether, "You need to 0.2 ether to withdraw funds");
 
         uint256 amount = currentAmount;
@@ -179,6 +179,10 @@ contract Campaign {
             total += donations[donorAddresses[i]].donations.length;
         }
         return total;
+    }
+
+    function getDonorAddresses() public view returns (address[] memory) {
+        return donorAddresses;
     }
 
     function getNftContract() public view onlyOwner returns (address) {

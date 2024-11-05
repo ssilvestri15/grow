@@ -133,6 +133,19 @@
   margin: 20px;
 }
 
+div.empty_donations {
+  display: flex;
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+  /* align-content: center; */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+div.empty_donations svg {
+  max-width: 400px;
+}
 @media (min-width: 1010px) {
 
   .back-button {

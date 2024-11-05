@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-const { smarthomeai, ecobattery, quantumwallet, aihealthcare, smartcitygrid } = require("./campaignlist");
+const { smarthomeai, ecobattery, quantumwallet, aihealthcare, smartcitygrid, agritechAI, edtechAI, cleanairTech, ecoWater, recycleBot } = require("./campaignlist");
 const fs = require('fs');
 const path = require('path');
 
@@ -62,7 +62,7 @@ function printCustomError(title, error) {
 
 async function main() {
   // Ottieni l'account del deployer
-  const [deployer, owner, owner2, owner3, owner4, owner5] = await hre.ethers.getSigners();
+  const [deployer, owner, owner2, owner3, owner4, owner5, owner6, owner7, owner8, owner9, owner10] = await hre.ethers.getSigners();
 
   console.log("Deploying contracts with the account:", deployer.address);
 
@@ -101,7 +101,11 @@ async function main() {
   await createCampaign(owner3, crowdfundingFactory, quantumwallet).catch((error) => printCustomError("QuantumWallet", error));
   await createCampaign(owner4, crowdfundingFactory, aihealthcare).catch((error) => printCustomError("AIHealthcare", error));
   await createCampaign(owner5, crowdfundingFactory, smartcitygrid).catch((error) => printCustomError("SmartCityGrid", error));
-
+  await createCampaign(owner6, crowdfundingFactory, agritechAI).catch((error) => printCustomError("AgriTechAI", error));
+  await createCampaign(owner7, crowdfundingFactory, edtechAI).catch((error) => printCustomError("EdTechAI", error));
+  await createCampaign(owner8, crowdfundingFactory, cleanairTech).catch((error) => printCustomError("CleanAirTech", error));
+  await createCampaign(owner9, crowdfundingFactory, ecoWater).catch((error) => printCustomError("EcoWater", error));
+  await createCampaign(owner10, crowdfundingFactory, recycleBot).catch((error) => printCustomError("RecycleBot", error));
 }
 
 // Avvia il processo di deploy
