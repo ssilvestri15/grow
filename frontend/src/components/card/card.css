@@ -5,7 +5,7 @@
   width: -webkit-fill-available;
   height: fit-content;
   border-radius: 15px;
-  background-color: #c7bebe;
+  background-color: #e7e1dd;
   padding: 20px;
   margin-top: 10px;
 }
@@ -98,7 +98,7 @@
   }
 
   .tier_price {
-    font-size: 2vw;
+    font-size: 1vw;
   }
 
   .wallett_title {

@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("./tasks/fundwallet");
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {

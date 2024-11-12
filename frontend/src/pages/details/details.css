@@ -18,7 +18,7 @@
 
 .panels .right {
   width: -webkit-fill-available;
-  background: #e4dada;
+  background: #e3d5cc;
 }
 .back-button {
   background: none;
@@ -146,6 +146,16 @@ div.empty_donations {
 div.empty_donations svg {
   max-width: 400px;
 }
+
+div.section_donate {
+  display: flex;
+  flex-direction: column;
+  width: -webkit-fill-available;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 @media (min-width: 1010px) {
 
   .back-button {

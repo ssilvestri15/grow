@@ -1,0 +1,134 @@
+.tiers_card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: -webkit-fill-available;
+  padding: 10px;
+  border-radius: 1rem;
+  background-color: #e7e1dd;
+  transition: height 0.5s ease; /* animation for height */
+}
+
+.tiers_card p {
+    margin: 0px;
+    color: #1d1d1d;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.close_btn_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    border-radius: 100%;
+    background: #ffffff;
+    padding: 0.2rem;
+    cursor: pointer;
+}
+
+.tiers_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: -webkit-fill-available;
+}
+
+.tiers_body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: -webkit-fill-available;
+    margin-top: 20px;
+}
+
+.amount_list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: -webkit-fill-available;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.amount_list.selected {
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.amount_item {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    padding: 10px;
+    min-width: 80px;
+    border-radius: 1rem;
+    background-color: #F4F4F4;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    color: #1d1d1d;
+    font-weight: bold;
+}
+
+.amount_item.minimized {
+    min-width: 0px;
+}
+
+.amount_item.selected {
+    background-color: #d94e32;
+    color: #ffffff;
+}
+
+.amount_input {
+    display: flex;
+    flex-direction: column;
+    width: -webkit-fill-available;
+    margin-top: 10px;
+}
+
+.amount_input_field {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: -webkit-fill-available;
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.amount_input_field .amount_input_symbol{
+    color: #1d1d1d;
+    font-weight: bold;
+    font-size: 0.6rem;
+}
+
+.amount_input input {
+    width: -webkit-fill-available;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+    background: transparent;
+    align-items: baseline;
+    margin-left: 5px;
+}
+
+.amount_input .amount_input_error {
+    color: #d94e32;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    width: -webkit-fill-available;
+    text-align: center;
+    font-weight: bold;
+}
+
+button.btn-donation{
+    margin-top: 10px;
+}
