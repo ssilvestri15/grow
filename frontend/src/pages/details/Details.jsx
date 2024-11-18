@@ -9,18 +9,20 @@ import { ButtonDonation } from "../../components/btn_dona/ButtonDonation";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { getCampaign, donate } from "../../utils/CampaignManager";
+import { getPalette } from "../../utils/PaletteGenerator";
 import { ReactComponent as SadCat } from "../../assets/sad_cat.svg";
 import {Tiers} from "../../components/tiers/Tiers";
 
+
 function Details() {
   const location = useLocation();
-  const [progress, setProgress] = useState(0); // Current crowdfunding progress
-  const [campaignDetails, setCampaignDetails] = useState({});
   const { address } = location.state || {};
-  console.log("Address: ", address);
   const [loading, setLoading] = useState(true);
+  const [campaignDetails, setCampaignDetails] = useState({});
+  const [progress, setProgress] = useState(0); // Current crowdfunding progress
   const [showTiers, setShowTiers] = useState(false);
   const [reloadPageTrigger, setReloadPageTrigger] = useState(false);
+  //const [palette, setPalette] = useState({});
 
   let navigate = useNavigate();
   const handleBackClick = () => {
@@ -33,12 +35,18 @@ function Details() {
       try {
         setLoading(true);
         const campaignData = await getCampaign(address);
-        setCampaignDetails(campaignData);
         const p = (campaignData.currentAmount / campaignData.target) * 100;
+        /*const paletteData = (campaignData && campaignData.posterUrl) ? await getPalette(campaignData.posterUrl) : await getPalette();
+        setPalette(paletteData);*/
+        setCampaignDetails(campaignData);
         setProgress(p > 100 ? 100 : p);
+        setShowTiers(false);
       } catch (error) {
         console.error(error);
         setCampaignDetails({});
+        setProgress(0);
+        //setPalette({});
+        setShowTiers(false);
       } finally {
         setLoading(false);
       }
@@ -46,6 +54,10 @@ function Details() {
 
     fetchCampaignDetail();
   }, [reloadPageTrigger]);
+
+  if (!address) {
+    return <div>Invalid campaign address</div>;
+  }
 
   return (
     <div className="Details">
@@ -71,7 +83,7 @@ function Details() {
                 <div className="progress-bar">
                   <div
                     className="progress"
-                    style={{ width: `${(progress / 10000) * 100}%` }}
+                    style={{ width: `${(progress)}%` }}
                   >
                     <span className="progress-text">
                       ETH&nbsp;{campaignDetails.currentAmount}

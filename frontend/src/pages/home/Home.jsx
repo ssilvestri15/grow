@@ -5,18 +5,22 @@ import SlideShow from "../../components/slideshow/slideshow";
 import IndefiniteProgressBar from "../../components/circlepb/IndefiniteProgressBar";
 
 import { useNavigate } from "react-router-dom";
-import { useWalletManager, WALLET_ERRORS } from "../../utils/WalletManager";
+//import { useWalletManager, WALLET_ERRORS } from "../../utils/WalletManager";
 
 import { getCampaigns } from "../../utils/CrowdfundingManager";
 
 function Home() {
   const [showCrowdfunding, setShowCrowdfunding] = useState(false); // To toggle between pages
-  const { walletStatus, connectWallet } = useWalletManager();
+  //const { walletStatus, connectWallet } = useWalletManager();
   const [campaignsListSlide, setCampaignsListSlide] = useState([]);
   const [campaignsListMost, setCampaignsListMost] = useState([]);
   const [loading, setLoading] = useState(true);
 
   let navigate = useNavigate();
+  const handleCreateClick = () => {
+    let path = `/create`; 
+    navigate(path);
+  };
   const handleProductClick = (id, address) => {
     let path = `/project/${id}`; 
     navigate(path, { state: { address } });
@@ -43,7 +47,7 @@ function Home() {
   return (
     <div className="App">
       <div className="carousel-page">
-          <Toolbar walletStatus={walletStatus} connectWallet={connectWallet} />
+          <Toolbar text="New Crowdfunding" symbol="add" whenClicked={()=>{handleCreateClick()}}/>
           { loading ? (
             <IndefiniteProgressBar width={64} height={64} stroke={6} color="#141414" />
           ) : (

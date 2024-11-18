@@ -14,27 +14,36 @@
   font-size: 2em;
 }
 
-.toolbar .wallet_div {
+.toolbar .btn_div {
   color: white;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   padding: 5px;
-  background-color: #141414;
+  background: #141414;
   border-radius: 10px;
+  cursor: pointer;
 }
 
-.toolbar .wallet_div.error {
+.toolbar .btn_div:hover {
+  background: #3b3b3b;
+}
+
+.toolbar .btn_div:active {
+  background: #141414;
+}
+
+.toolbar .btn_div.error {
   color: white;
   background-color: #aa0000;
 }
 
-.toolbar .wallet_div.loading {
+.toolbar .btn_div.loading {
   background-color: transparent;
 }
 
-.toolbar .wallet_div .btn_text {
+.toolbar .btn_div .btn_text {
   margin-left: 5px;
   font-family: "Montserrat", sans-serif;
   font-weight: 500;

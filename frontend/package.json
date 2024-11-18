@@ -4,12 +4,12 @@
   "private": true,
   "dependencies": {
     "@material-tailwind/react": "^2.1.10",
-    "@testing-library/jest-dom": "^6.6.2",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.27.0",
+    "react-router-dom": "^6.28.0",
     "react-scripts": "5.0.1",
     "react-slick": "^0.30.2",
     "swiper": "^11.1.14",
@@ -40,6 +40,9 @@
     ]
   },
   "devDependencies": {
-    "ethers": "^6.13.4"
+    "chroma-js": "^3.1.2",
+    "color.js": "^1.2.0",
+    "ethers": "^6.13.4",
+    "react-extract-colors": "^1.5.1"
   }
 }

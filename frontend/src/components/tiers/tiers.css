@@ -7,7 +7,8 @@
   padding: 10px;
   border-radius: 1rem;
   background-color: #e7e1dd;
-  transition: height 0.5s ease; /* animation for height */
+  transition: height 0.3s ease, padding 0.3s ease; /* Adjust timing and easing */
+  overflow: hidden;
 }
 
 .tiers_card p {
@@ -48,11 +49,12 @@
 .amount_list {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     width: -webkit-fill-available;
     flex-wrap: wrap;
     align-content: center;
+    gap: 10px;
 }
 
 .amount_list.selected {
@@ -68,7 +70,7 @@
     width: fit-content;
     padding: 10px;
     min-width: 80px;
-    border-radius: 1rem;
+    border-radius: 10px;
     background-color: #F4F4F4;
     cursor: pointer;
     transition: all 0.5s ease;
@@ -78,11 +80,13 @@
 
 .amount_item.minimized {
     min-width: 0px;
+    border-radius: 1rem;
 }
 
 .amount_item.selected {
-    background-color: #d94e32;
+    background-color: #dfad8e;
     color: #ffffff;
+    border-radius: 1rem;
 }
 
 .amount_input {
@@ -131,4 +135,9 @@
 
 button.btn-donation{
     margin-top: 10px;
+    margin-right: 0px;
+    margin-left: 0px;
+    width: -webkit-fill-available;
+    align-self: flex-end;
+    background-color: #ff5722;
 }

@@ -1,7 +1,3 @@
-/* Crowdfunding Page */
-.crowdfunding-page {
-}
-
 .panels {
   display: flex;
   flex-direction: column;
@@ -108,6 +104,7 @@
   border-radius: 20px;
   text-align: end;
   line-height: 40px;
+  transition: width 0.5s ease;
 }
 
 .progress-text {
@@ -153,7 +150,7 @@ div.section_donate {
   width: -webkit-fill-available;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 20px;
 }
 
 @media (min-width: 1010px) {
@@ -220,4 +217,9 @@ div.section_donate {
   .right_section_title {
     font-size: 1.5vw;
   }
+
+  div.section_donate {
+    margin: 0px 0px 20px 0px;
+  }
+
 }
