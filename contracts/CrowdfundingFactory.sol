@@ -29,7 +29,7 @@ contract CrowdfundingFactory {
         require(_target > 0.4 ether, "Target must be greater than 0.4 ether");
         require(_duration > 0, "Duration must be at least one day");
         require(bytes(_title).length > 0, "Title must not be empty");
-        require(bytes(_description).length > 0, "Description must not be empty");
+        require(bytes(_description).length > 0 && bytes(_description).length <= 1000, "Description must not be empty and be less or equal to 1000 characters");
         require(bytes(_urlImagePoster).length > 0, "Image poster URL must not be empty");
         require(bytes(_urlImageBanner).length > 0, "Image banner URL must not be empty");
         require(bytes(_nftName).length > 0, "NFT name must not be empty");

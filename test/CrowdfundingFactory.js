@@ -159,7 +159,7 @@ describe("CrowdfundingFactory", function () {
         duration,
         { value: ethers.parseEther("0.2") }
       )
-    ).to.be.revertedWith("Description must not be empty");
+    ).to.be.revertedWith("Description must not be empty and be less or equal to 1000 characters");
   });
   
   it("should revert if the image poster URL is empty.", async function () {

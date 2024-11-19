@@ -10,7 +10,7 @@ import { ButtonDonation } from "../../components/btn_dona/ButtonDonation";
 
 function CreateCampaign({}) {
 
-  const {posterUrl, bannerUrl, campaignTitle, campaignDescription, campaignTarget, campaignEndDate, nftName, nftSymbol, handleFieldChange, checkValidity} = useCampaignFormViewModel();
+  const {posterUrl, bannerUrl, campaignTitle, campaignDescription, campaignTarget, campaignEndDate, nftName, nftSymbol, handleFieldChange, createAndPay} = useCampaignFormViewModel();
 
   let navigate = useNavigate();
   const handleBackClick = () => {
@@ -65,7 +65,7 @@ function CreateCampaign({}) {
             <InputField typeInput="text" placeholder="Insert NFT Symbol" state={nftSymbol} onFieldChange={(newState) => {handleFieldChange("nftSymbol", newState)}}/>
           </div>
           <div className="campaign_pay">
-            <ButtonDonation text="Create & Pay" onClick={checkValidity}/>
+            <ButtonDonation text="Create & Pay" onClick={createAndPay}/>
           </div>
         </div>
       </div>

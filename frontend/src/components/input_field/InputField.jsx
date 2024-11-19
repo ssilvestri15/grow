@@ -1,15 +1,18 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useRef } from "react";
 import "./input_field.css";
 
 function InputField({ typeInput = "text", placeholder = "", state, onFieldChange }) {
+  const textareaRef = useRef(null);
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
 
 
-  /*useEffect(() => {
-    e.target.style.height = "auto";
-    e.target.style.height = `${e.target.scrollHeight}px`;
-  }, [state]);*/
+  useEffect(() => {
+    if (textareaRef && textareaRef.current) {
+      textareaRef.current.style.height = "auto"; // Reset height to auto
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set height to scrollHeight
+    }
+  }, [state.value]);
 
   const handleChange = (e) => {
     onFieldChange(e.target.value);
@@ -31,13 +34,14 @@ function InputField({ typeInput = "text", placeholder = "", state, onFieldChange
       ) : (
         <div className="textarea_container">
           <textarea
+            ref={textareaRef}
             value={state.value}
             onChange={handleChange}
             className="input"
             placeholder={placeholder}
-            maxLength={250}
+            maxLength={1000}
           />
-          <div className="textarea_char">{state.value.length}/250</div>
+          <div className="textarea_char">{state.value.length}/1000</div>
         </div>
       )}
     </div>
