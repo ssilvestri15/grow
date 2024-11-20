@@ -24,8 +24,9 @@
     color: #333333;
 }
 
-input, textarea {    
-    font-family: "Montserrat Alternates", sans-serif;
+.input_field input.input, .input_field textarea.input {    
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
     color: #333333;
     font-size: medium;
 }
@@ -42,6 +43,12 @@ input, textarea {
 .textarea_container textarea::-webkit-scrollbar {
     width: 0; /* Remove vertical scrollbar */
     height: 0; /* Remove horizontal scrollbar */
+}
+
+.input_field input::placeholder.input, .input_field textarea::placeholder.input {
+    font-family: "Montserrat Alternates", sans-serif;
+    color: #333333;
+    font-size: medium;
 }
 
 .textarea_container textarea::placeholder {
