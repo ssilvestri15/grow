@@ -30,15 +30,15 @@ function Home() {
     async function fetchCampaigns() {
       try {
         setLoading(true);
-        console.log(process.env.REACT_APP_WIFI_IP);
-        const response = await axios.get(`http://${process.env.REACT_APP_WIFI_IP}:3001/api/getcampaigns/`);
+        /*const response = await axios.get(`http://${process.env.REACT_APP_WIFI_IP}:3001/api/getcampaigns/`);
         let campaignsData = [];
         console.log(response);
         if (response.status !== 200) {
           campaignsData = [];
         } else {
           campaignsData = response.data;
-        }
+        }*/
+        const campaignsData = await getCampaigns();
         setCampaignsListSlide(campaignsData.slice(0, Math.min(3, campaignsData.length)));
         setCampaignsListMost(campaignsData.slice(Math.min(3, campaignsData.length)));
       } catch (error) {

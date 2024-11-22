@@ -36,7 +36,7 @@ function Details() {
     async function fetchCampaignDetail() {
       try {
         setLoading(true);
-        let campaignData = [];
+        /*let campaignData = [];
         const response = await axios.post(`http://${process.env.REACT_APP_WIFI_IP}:3001/api/getcampaign/detail/`, {
           campaignAddress: address,
         });
@@ -45,7 +45,8 @@ function Details() {
           campaignData = {};
         } else {
           campaignData = response.data;
-        }
+        }*/
+        const campaignData = await getCampaign(address);
         const p = (campaignData.currentAmount / campaignData.target) * 100;
         /*const paletteData = (campaignData && campaignData.posterUrl) ? await getPalette(campaignData.posterUrl) : await getPalette();
         setPalette(paletteData);*/

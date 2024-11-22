@@ -1,6 +1,10 @@
 import { ethers } from 'ethers';
 
-export async function getProvider() {
+export async function getProvider(onlyView = true) {
+    if (onlyView) {
+        let provider = new ethers.JsonRpcProvider(`http://${process.env.REACT_APP_WIFI_IP}:8545`);
+        return [provider, null];
+    }
     let signer = null;
     let provider;
     if (window.ethereum == null) {
