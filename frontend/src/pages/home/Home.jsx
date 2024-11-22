@@ -3,6 +3,7 @@ import "./home.css";
 import Toolbar from "../../components/toolbar/toolbar";
 import SlideShow from "../../components/slideshow/slideshow";
 import IndefiniteProgressBar from "../../components/circlepb/IndefiniteProgressBar";
+import axios from "axios";
 
 import { useNavigate } from "react-router-dom";
 //import { useWalletManager, WALLET_ERRORS } from "../../utils/WalletManager";
@@ -29,11 +30,18 @@ function Home() {
     async function fetchCampaigns() {
       try {
         setLoading(true);
-        const campaignsData = await getCampaigns();
+        console.log(process.env.REACT_APP_WIFI_IP);
+        const response = await axios.get(`http://${process.env.REACT_APP_WIFI_IP}:3001/api/getcampaigns/`);
+        let campaignsData = [];
+        console.log(response);
+        if (response.status !== 200) {
+          campaignsData = [];
+        } else {
+          campaignsData = response.data;
+        }
         setCampaignsListSlide(campaignsData.slice(0, Math.min(3, campaignsData.length)));
         setCampaignsListMost(campaignsData.slice(Math.min(3, campaignsData.length)));
       } catch (error) {
-        console.error(error);
         setCampaignsListSlide([]);
         setCampaignsListMost([]);
       } finally {

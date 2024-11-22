@@ -2,6 +2,7 @@ const hre = require("hardhat");
 const { smarthomeai, ecobattery, quantumwallet, aihealthcare, smartcitygrid, agritechAI, edtechAI, cleanairTech, ecoWater, recycleBot } = require("./campaignlist");
 const fs = require('fs');
 const path = require('path');
+const { getWifiIp } = require('./wifi');
 
 async function createCampaign(owner, factory, {
   title,
@@ -61,6 +62,19 @@ function printCustomError(title, error) {
 }
 
 async function main() {
+
+  //Save ip to env
+  const wifiIp = getWifiIp();
+  const envIp = `REACT_APP_WIFI_IP=${wifiIp}`;
+  const envFilePathIp = path.resolve(__dirname, '../frontend/.env');
+  try {
+    fs.writeFileSync(envFilePathIp, envIp);
+    console.log(`Updated ip in ${envFilePathIp}`);  
+  } catch (err) {
+    console.error(err);
+  }
+
+
   // Ottieni l'account del deployer
   const [deployer, owner, owner2, owner3, owner4, owner5, owner6, owner7, owner8, owner9, owner10] = await hre.ethers.getSigners();
 
@@ -75,7 +89,6 @@ async function main() {
 
   // Salva l'indirizzo della Crowdfunding Factory
   const addressesFilePath = path.resolve(__dirname, '../frontend/src/config/contractAddresses.json');
-
   let addresses;
   try {
     addresses = JSON.parse(fs.readFileSync(addressesFilePath, 'utf8'));
@@ -95,6 +108,15 @@ async function main() {
     console.error(err);
   }
 
+  const envFilePath = path.resolve(__dirname, '../backend/.env');
+  const stringToEnv = `CROWDFUNDING_FACTORY_ADDRESS=${factoryAddress}`;
+  try {
+    fs.writeFileSync(envFilePath, stringToEnv);
+    console.log(`Updated contract addresses in ${envFilePath}`);  
+  } catch (err) {
+    console.error(err);
+  }
+
   // Deploy delle campagne e controllo errori
   await createCampaign(owner, crowdfundingFactory, smarthomeai).catch((error) => printCustomError("SmartHomeAI", error));
   await createCampaign(owner2, crowdfundingFactory, ecobattery).catch((error) => printCustomError("EcoBattery", error));
@@ -107,7 +129,6 @@ async function main() {
   await createCampaign(owner9, crowdfundingFactory, ecoWater).catch((error) => printCustomError("EcoWater", error));
   await createCampaign(owner10, crowdfundingFactory, recycleBot).catch((error) => printCustomError("RecycleBot", error));
 }
-
 // Avvia il processo di deploy
 main()
   .then(() => process.exit(0))

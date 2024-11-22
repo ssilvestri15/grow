@@ -12,6 +12,8 @@ import { getCampaign, donate } from "../../utils/CampaignManager";
 import { getPalette } from "../../utils/PaletteGenerator";
 import { ReactComponent as SadCat } from "../../assets/sad_cat.svg";
 import {Tiers} from "../../components/tiers/Tiers";
+import { isMetaMaskInstalled } from "../../utils/Provider";
+import axios from "axios";
 
 
 function Details() {
@@ -34,7 +36,16 @@ function Details() {
     async function fetchCampaignDetail() {
       try {
         setLoading(true);
-        const campaignData = await getCampaign(address);
+        let campaignData = [];
+        const response = await axios.post(`http://${process.env.REACT_APP_WIFI_IP}:3001/api/getcampaign/detail/`, {
+          campaignAddress: address,
+        });
+        console.log(response);
+        if (response.status !== 200) {
+          campaignData = {};
+        } else {
+          campaignData = response.data;
+        }
         const p = (campaignData.currentAmount / campaignData.target) * 100;
         /*const paletteData = (campaignData && campaignData.posterUrl) ? await getPalette(campaignData.posterUrl) : await getPalette();
         setPalette(paletteData);*/
@@ -95,19 +106,23 @@ function Details() {
           </div>
           <div className="right">
             <div className="project_info_3">
-              <div className="section_donate">
-                {
-                  showTiers ? (
-                    <Tiers setShowTiers={setShowTiers} donateToCampaign={(amount) => {donateToCampaign(address,amount, setReloadPageTrigger)}}/>
-                  ) : (
-                    <ButtonDonation
-                      text="Make a donation"
-                      onClick={() => {
-                        setShowTiers(true);
-                    }} />
-                  )
-                }
-              </div>
+              {
+                isMetaMaskInstalled() ? (
+                  <div className="section_donate">
+                  {
+                    showTiers ? (
+                      <Tiers setShowTiers={setShowTiers} donateToCampaign={(amount) => {donateToCampaign(address,amount, setReloadPageTrigger)}}/>
+                    ) : (
+                      <ButtonDonation
+                        text="Make a donation"
+                        onClick={() => {
+                          setShowTiers(true);
+                      }} />
+                    )
+                  }
+                  </div>
+                ) : null
+              }
               {(campaignDetails.myDonations == undefined ||
                 campaignDetails.myDonations.length === 0) &&
               (campaignDetails.otherDonations == undefined ||

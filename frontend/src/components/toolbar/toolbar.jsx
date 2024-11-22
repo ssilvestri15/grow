@@ -3,6 +3,7 @@ import "./toolbar.css";
 import Searchbar from "../searchbar/searchbar";
 import IndefiniteProgressBar from "../circlepb/IndefiniteProgressBar";
 import {ButtonDonation} from "../btn_dona/ButtonDonation";
+import { isMetaMaskInstalled } from "../../utils/Provider";
 
 export function ToolbarButton({symbol, text, whenClicked }) {
   return (
@@ -18,7 +19,11 @@ function Toolbar({symbol, text, whenClicked }) {
     <div className="toolbar">
       <a className="logo_title">Grow</a>
       <Searchbar />
-      <ToolbarButton symbol={symbol} text={text} whenClicked={whenClicked} />
+      {
+        isMetaMaskInstalled() ? (
+          <ToolbarButton symbol={symbol} text={text} whenClicked={whenClicked}/>
+        ) : null
+      }
     </div>
   );
 }

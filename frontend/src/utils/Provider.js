@@ -23,3 +23,10 @@ export async function getProvider() {
         return [provider, signer];
     }
 }
+
+export function isMetaMaskInstalled() {
+    if (window.ethereum == null) {
+        return false;
+    }
+    return true;
+}
