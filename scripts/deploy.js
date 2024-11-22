@@ -128,6 +128,8 @@ async function main() {
   await createCampaign(owner8, crowdfundingFactory, cleanairTech).catch((error) => printCustomError("CleanAirTech", error));
   await createCampaign(owner9, crowdfundingFactory, ecoWater).catch((error) => printCustomError("EcoWater", error));
   await createCampaign(owner10, crowdfundingFactory, recycleBot).catch((error) => printCustomError("RecycleBot", error));
+
+  console.log("Init ended")
 }
 // Avvia il processo di deploy
 main()
