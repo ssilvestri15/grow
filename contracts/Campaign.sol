@@ -27,16 +27,15 @@ contract Campaign {
     uint256 public currentAmount;
     mapping(address => DonationSummary) public donations;
     address[] public donorAddresses;
-    Donation[] public failedRefounds;
     uint256 public deadline;
     uint256 public startDate;
     NFT public nftContract; //Contratto per la creazione di NFT dedicato alla campagna
-    bool public isClosed;
 
     event Donated(address indexed donor, uint256 amount);
     event FundsWithdrawn(address indexed owner, uint256 amount);
-    event Refunded(address indexed donor, uint256 amount);
+    event RefundFailed(address indexed donor, uint256 amount, string reason);
     event CampaignClosed(string title);
+    event RefundAllSuccess(address indexed campaignAddress);
 
     constructor(
         string memory _title,
@@ -59,138 +58,85 @@ contract Campaign {
         startDate = block.timestamp;
         deadline = startDate + (_duration * 86400); // Conversione giorni -> secondi
         currentAmount = 0;
-        isClosed = false;
         nftContract = NFT(_nftContract);
     }
 
-    function donate() public payable {
+    function donate() external payable {
         require(msg.value > 0, "Donation must be greater than zero");
-        require(!isClosed, "The campaign is closed");
-
-        DonationSummary storage summary = donations[msg.sender];
+        require(block.timestamp >= deadline, "The campaign is still active");
         
-        if (summary.donor != msg.sender) {
-            summary.donor = msg.sender;
-            summary.totalAmount = 0;
-            // Mint NFT per il donatore
+        if (donations[msg.sender].totalAmount == 0) {
+            donorAddresses.push(msg.sender);
+            // Mint NFT for new donors
             nftContract.mint(msg.sender);
         }
         
-        summary.totalAmount += msg.value;
-        summary.donations.push(Donation(msg.sender, msg.value, block.timestamp));
-        donorAddresses.push(msg.sender);
+        donations[msg.sender].totalAmount += msg.value;
+        donations[msg.sender].donations.push(Donation(msg.sender, msg.value, block.timestamp));
         currentAmount += msg.value;
         emit Donated(msg.sender, msg.value);
     }
 
-    function withdrawFunds() payable public {
-        require(msg.sender == owner, "Only the owner can withdraw funds");
-        require(block.timestamp >= deadline,"The campaign has not yet expired");
-        require(currentAmount > targetAmount, "The targetAmount has not been reached");
-        require(msg.value == 0.2 ether, "You need to 0.2 ether to withdraw funds");
+    function withdrawFunds() external onlyCreator {
+        require(block.timestamp >= deadline, "The campaign is still active");
+        require(address(this).balance >= targetAmount, "Target amount not reached");
 
-        uint256 amount = currentAmount;
-        currentAmount = 0;
-        isClosed = true;
+        uint256 amount = address(this).balance;
 
-        (bool sent, ) = payable(owner).call{value: amount}("");
-        require(sent, "Failed to send Ether");
+        (bool success, ) = payable(owner).call{value: amount}("");
+        require(success, "Transfer failed");
 
         emit FundsWithdrawn(owner, amount);
     }
 
-    function closeCampaignAndRefund() public {
-        require(!isClosed, "The campaign is already closed");
-        require(msg.sender == owner || msg.sender == creator, "You can't close this campaign");
-        isClosed = true;
-
-        uint256 failed = 0;
-
+    function refundAll() external onlyCreator {
+        require(block.timestamp >= deadline, "The campaign is still active");
+        
         for (uint256 i = 0; i < donorAddresses.length; i++) {
             uint256 amountToRefund = donations[donorAddresses[i]].totalAmount;
-            donations[donorAddresses[i]].totalAmount = 0;
-            (bool sent, ) = payable(donorAddresses[i]).call{value: amountToRefund}("");
-            if (!sent) {
-                failed++;
-                failedRefounds.push(Donation(donorAddresses[i], amountToRefund, block.timestamp));
+            if (amountToRefund > 0) {
+                donations[donorAddresses[i]].totalAmount = 0;
+                (bool sent, ) = payable(donorAddresses[i]).call{value: amountToRefund}("");
+                if (!sent) {
+                    donations[donorAddresses[i]].totalAmount = amountToRefund;
+                    emit RefundFailed(donorAddresses[i], amountToRefund, "");
+                }
             }
         }
 
-        require(failed == 0, "Failed to refund all donors");
-
-        emit CampaignClosed(title);
+        emit RefundAllSuccess(address(this));
     }
 
-    function retryRefund() public {
-        require(msg.sender == owner || msg.sender == creator, "Only the owner or the creator can retry refunds");
-        require(failedRefounds.length > 0, "No failed refunds to retry");
-
-        uint256 failed = 0;
-
-        // Iterate in reverse to safely remove elements
-        for (uint256 i = failedRefounds.length; i > 0; i--) {
-            uint256 index = i - 1;
-            uint256 amountToRefund = failedRefounds[index].amount;
-            (bool sent, ) = payable(failedRefounds[index].donor).call{value: amountToRefund}("");
-
-            if (!sent) {
-                failed++;
-            } else {
-                // Remove the refunded donation from the failed refunds list
-                failedRefounds[index] = failedRefounds[failedRefounds.length - 1];
-                failedRefounds.pop();
-            }
-        }
-
-        require(failed == 0, "Failed to refund all donors");
+    function rufund(address donor) external onlyCreator {
+        require(block.timestamp >= deadline, "The campaign is still active");
+        uint256 refundAmount = donations[donor].totalAmount;
+        require(refundAmount > 0, "No failed refund for this donor");
+        require(address(this).balance >= refundAmount, "Contract balance is insufficient");
+        
+        donations[donor].totalAmount = 0;
+        (bool success, ) = payable(donor).call{value: refundAmount}("");
+        require(success, "Refund failed");
     }
 
-
-    function getUserDonations(address userAddress) public view returns (Donation[] memory) {
+    function getUserDonations(address userAddress) external view returns (Donation[] memory) {
         return donations[userAddress].donations;
     }
 
-
-    // Generate a pseudo-random number
-    function generateRandomNumber(uint256 max) internal view returns (uint256) {// Genera un numero pseudocasuale compreso tra 0 e max
-        return uint256(keccak256(abi.encodePacked(block.prevrandao, msg.sender))) % max;
-    }
-
-    function getRandomDonations(uint256 count) public view returns (Donation[] memory) {
-        // Ensure the number of requested donations is not greater than the available donations
-        require(count > 0 && count <= totalDonations(), "Invalid count");
-        Donation[] memory randomDonations = new Donation[](count);
-        uint256 selected = 0;
-
-        while (selected < count) {
-            uint256 randomIndex = generateRandomNumber(donorAddresses.length);
-            DonationSummary storage summary = donations[donorAddresses[randomIndex]];
-            uint256 randomDonationIndex = generateRandomNumber(summary.donations.length);
-            randomDonations[selected] = summary.donations[randomDonationIndex];
-            selected++;
-        }
-
-        return randomDonations;
-    }
-
-    function totalDonations() internal view returns (uint256) {
-        uint256 total = 0;
-        for (uint256 i = 0; i < donorAddresses.length; i++) {
-            total += donations[donorAddresses[i]].donations.length;
-        }
-        return total;
-    }
-
-    function getDonorAddresses() public view returns (address[] memory) {
+    function getDonorAddresses() external view returns (address[] memory) {
         return donorAddresses;
     }
 
-    function getNftContract() public view onlyOwner returns (address) {
+    function getNftContract() external view onlyOwner returns (address) {
         return address(nftContract);
     }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
+
+    modifier onlyCreator() {
+        require(msg.sender == creator, "Only the creator can call this function");
         _;
     }
 

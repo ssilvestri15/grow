@@ -24,7 +24,7 @@ contract CrowdfundingFactory {
         string memory _nftSymbol,
         uint256 _target,
         uint256 _duration
-    ) public payable {
+    ) external payable {
         require(msg.value == 0.2 ether, "You need to send exactly 0.2 Ether to create a campaign");
         require(_target > 0.4 ether, "Target must be greater than 0.4 ether");
         require(_duration > 0, "Duration must be at least one day");
@@ -57,8 +57,15 @@ contract CrowdfundingFactory {
         emit CampaignCreated(_title);
     }
 
-    function getCampaigns() public view returns (Campaign[] memory) {
+    function getCampaigns() external view returns (Campaign[] memory) {
         return campaigns;
+    }
+
+    function withdrawFunds(address campaignAddress) external payable{
+        Campaign campaign = Campaign(campaignAddress);
+        require(msg.sender == campaign.owner(), "You are not the owner of this campaign");
+        require(msg.value == 0.2 ether, "You need to send exactly 0.2 Ether to withdraw funds");
+        campaign.withdrawFunds();
     }
     
 }
