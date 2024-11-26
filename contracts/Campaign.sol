@@ -63,7 +63,7 @@ contract Campaign {
 
     function donate() external payable {
         require(msg.value > 0, "Donation must be greater than zero");
-        require(block.timestamp >= deadline, "The campaign is still active");
+        require(block.timestamp <= deadline, "The campaign is closed");
         
         if (donations[msg.sender].totalAmount == 0) {
             donorAddresses.push(msg.sender);
