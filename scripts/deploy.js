@@ -66,9 +66,9 @@ function saveToFile(filePath, data) {
 
 async function main() {
   // Save IP to .env
-  const wifiIp = getWifiIp();
+  const {os, ip} = getWifiIp();
   const envFilePath = path.resolve(__dirname, "../frontend/.env");
-  saveToFile(envFilePath, `REACT_APP_WIFI_IP=${wifiIp}`);
+  saveToFile(envFilePath, `REACT_APP_WIFI_IP=${ip}\nREACT_APP_OS=${os}`);
 
   // Get signers
   const signers = await hre.ethers.getSigners();
