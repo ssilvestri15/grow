@@ -100,7 +100,7 @@ describe("Campaign", function () {
 
   it("should update balance and emit Donated event on successful donation.", async function () {
     const donationAmount = ethers.parseEther("1");
-    const balance = await ethers.provider.getBalance(campaign.address);
+    const balance = await ethers.provider.getBalance(campaign.getAddress());
     // Controlla che l’evento Donated sia emesso con i dati corretti
     await expect(
       campaign.connect(donor).donate({ value: donationAmount })
@@ -109,8 +109,8 @@ describe("Campaign", function () {
       .withArgs(donor.address, donationAmount);
 
     // Controlla che currentAmount sia stato aggiornato
-    const currentBalance = await ethers.provider.getBalance(campaign.address);
-    const diff = currentBalance.sub(balance);
+    const currentBalance = await ethers.provider.getBalance(campaign.getAddress());
+    const diff = currentBalance - balance;
     expect(diff).to.equal(donationAmount);
   });
 
@@ -125,17 +125,13 @@ describe("Campaign", function () {
     const donationAmount = ethers.parseEther("2");
     await campaign.connect(donor).donate({ value: donationAmount });
     await ethers.provider.send("evm_increaseTime", [86400]) // add 1 day seconds
-    
-    const tx = await factory.connect(owner).withdrawFunds(campaign.address, {
+    await expect(factory.connect(owner).withdrawFunds(campaign.getAddress(), {
       value: tax,
-    });
-    await tx.wait();
-
-    await expect(tx).to.emit(campaign, "FundsWithdrawn").withArgs(owner.address, donationAmount);
+    })).to.emit(campaign, "FundsWithdrawn").withArgs(owner.address, donationAmount);
   });
 
   it("Should revert if called by non-creator", async function () {
-    await expect(campaign.connect(donor).withdrawFunds({ value: ethers.parseEther("0.2") }))
+    await expect(campaign.connect(donor).withdrawFunds())
         .to.be.revertedWith("Only the creator can call this function");
   });
 
@@ -143,22 +139,17 @@ describe("Campaign", function () {
     const tax = ethers.parseEther("0.2");
     const donationAmount = ethers.parseEther("2");
     await campaign.connect(donor).donate({ value: donationAmount });
-    
-    const tx = await factory.connect(owner).withdrawFunds(campaign.address, {
+    await expect(factory.connect(owner).withdrawFunds(campaign.getAddress(), {
       value: tax,
-    });
-    await tx.wait();
-
-    await expect(tx).to.be.revertedWith("The campaign is still active");
+    })).to.be.revertedWith("The campaign is still active");
   });
 
   it("Should revert if the target has not been reached", async function () {
     const tax = ethers.parseEther("0.2");
-    const tx = await factory.connect(owner).withdrawFunds(campaign.address, {
+    await ethers.provider.send("evm_increaseTime", [2*86400]) // add 1 day seconds
+    await expect(factory.connect(owner).withdrawFunds(campaign.getAddress(), {
       value: tax,
-    });
-    await tx.wait();
-    await expect(tx).to.be.revertedWith("The target has not been reached");
+    })).to.be.revertedWith("Target amount not reached");
   });
 
   it("Should revert if the incorrect ether amount is sent", async function () {
@@ -166,11 +157,9 @@ describe("Campaign", function () {
     const donationAmount = ethers.parseEther("2");
     await campaign.connect(donor).donate({ value: donationAmount });
     await ethers.provider.send("evm_increaseTime", [2*86400])
-    const tx = await factory.connect(owner).withdrawFunds(campaign.address, {
+    await expect(factory.connect(owner).withdrawFunds(campaign.getAddress(), {
       value: tax,
-    });
-    await tx.wait();
-    await expect(tx).to.be.revertedWith("You need to send exactly 0.2 Ether to withdraw funds");
+    })).to.be.revertedWith("You need to send exactly 0.2 Ether to withdraw funds");
   });
 
     
@@ -184,19 +173,30 @@ describe("Campaign", function () {
     const donationAmount = ethers.parseEther("2");
     await campaign.connect(donor1).donate({ value: donationAmount });
     const donor1BalanceBefore = await ethers.provider.getBalance(donor1.address);
-    await expect(contract.connect(factory).refundAll())
-      .to.emit(contract, "RefundAllSuccess")
-      .withArgs(contract.address);
+    await ethers.provider.send("evm_increaseTime", [2*86400]); // add 2 days
+    await network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [await factory.getAddress()]
+    });
+    const factorySigner = await ethers.provider.getSigner(await factory.getAddress());
+    await expect(campaign.connect(factorySigner).refundAll())
+      .to.emit(campaign, "RefundAllSuccess")
+      .withArgs(campaign.getAddress());
     const donor1BalanceAfter = await ethers.provider.getBalance(donor1.address);
     expect(donor1BalanceAfter).to.be.above(donor1BalanceBefore);
   });
 
   it("should fail if called before the deadline", async function () {
-    await expect(contract.connect(factory).refundAll()).to.be.revertedWith("The campaign is still active");
+    await network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [await factory.getAddress()]
+    });
+    const factorySigner = await ethers.provider.getSigner(await factory.getAddress());
+    await expect(campaign.connect(factorySigner).refundAll()).to.be.revertedWith("The campaign is still active");
   });
 
   it("should only allow the creator to call refundAll", async function () {
-    await expect(contract.connect(owner).refundAll()).to.be.revertedWith("Caller is not the creator");
+    await expect(campaign.connect(owner).refundAll()).to.be.revertedWith("Only the creator can call this function");
   });
 
   /* 

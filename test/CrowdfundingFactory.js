@@ -8,7 +8,7 @@ describe("CrowdfundingFactory", function () {
 
   beforeEach(async function () {
     // Get the CrowdfundingFactory contract
-    CrowdfundingFactory = await ethers.getContractFactory( "CrowdfundingFactory");
+    CrowdfundingFactory = await ethers.getContractFactory("CrowdfundingFactory");
     // Deploy the CrowdfundingFactory contract
     factory = await CrowdfundingFactory.deploy();
   });
@@ -27,8 +27,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -52,8 +52,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -62,7 +62,7 @@ describe("CrowdfundingFactory", function () {
     ).to.be.revertedWith("You need to send exactly 0.2 Ether to create a campaign");
   });
 
-  it("should revert if the target is not greater than zero.", async function () {
+  it("should revert if the target is not greater than 0.4.", async function () {
     const title = "MyTitle";
     const description = "MyDescription";
     const urlImagePoster = "MyUrlImagePoster";
@@ -76,8 +76,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -101,8 +101,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -126,8 +126,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -151,8 +151,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -176,8 +176,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -201,8 +201,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -226,8 +226,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -251,8 +251,8 @@ describe("CrowdfundingFactory", function () {
       factory.createCampaign(
         title,
         description,
-        urlImagePoster,
         urlImageBanner,
+        urlImagePoster,
         nftName,
         nftSymbol,
         target,
@@ -260,6 +260,123 @@ describe("CrowdfundingFactory", function () {
         { value: ethers.parseEther("0.2") }
       )
     ).to.be.revertedWith("NFT symbol must not be empty");
+  });
+
+  it("should be able to get campaign", async function () {
+    const title = "MyCampaign";
+    const description = "MyDescription";
+    const urlImagePoster = "MyUrlImagePoster";
+    const urlImageBanner = "MyUrlImageBanner";
+    const nftName = "MyNFT";
+    const nftSymbol = "MNFT";
+    const target = ethers.parseEther("100");
+    const duration = 100; //In giorni
+    // Check that the event was emitted
+    await factory.createCampaign(
+      title,
+      description,
+      urlImageBanner,
+      urlImagePoster,
+      nftName,
+      nftSymbol,
+      target,
+      duration,
+      { value: ethers.parseEther("0.2") }
+    );
+
+    const campaigns = await factory.getCampaigns();
+    expect(campaigns.length).to.equal(1);
+    const campaign = await ethers.getContractAt("Campaign", campaigns[0]);
+    expect(await campaign.title()).to.equal(title);
+  });
+
+  it("should be able to withdraw funds", async function () {
+    const [_, owner, donor] = await ethers.getSigners();
+    const title = "MyCampaign";
+    const description = "MyDescription";
+    const urlImagePoster = "MyUrlImagePoster";
+    const urlImageBanner = "MyUrlImageBanner";
+    const nftName = "MyNFT";
+    const nftSymbol = "MNFT";
+    const target = ethers.parseEther("1");
+    const duration = 1; //In giorni
+    // Check that the event was emitted
+    await factory.connect(owner).createCampaign(
+      title,
+      description,
+      urlImageBanner,
+      urlImagePoster,
+      nftName,
+      nftSymbol,
+      target,
+      duration,
+      { value: ethers.parseEther("0.2") }
+    );
+    const campaigns = await factory.getCampaigns();
+    const campaign = await ethers.getContractAt("Campaign", campaigns[0]);
+    await campaign.connect(donor).donate({ value: ethers.parseEther("5") });
+    await ethers.provider.send("evm_increaseTime", [2*86400]); // add 1 day seconds
+    await expect(
+      factory.connect(owner).withdrawFunds(campaign.getAddress(), {value: ethers.parseEther("0.2")})
+    ).to.emit(campaign, "FundsWithdrawn").withArgs(owner.address, ethers.parseEther("5"));
+  });
+
+  it("should revert if not owner", async function () {
+    const [_, owner, donor] = await ethers.getSigners();
+    const title = "MyCampaign";
+    const description = "MyDescription";
+    const urlImagePoster = "MyUrlImagePoster";
+    const urlImageBanner = "MyUrlImageBanner";
+    const nftName = "MyNFT";
+    const nftSymbol = "MNFT";
+    const target = ethers.parseEther("100");
+    const duration = 1; //In giorni
+    // Check that the event was emitted
+    await factory.connect(owner).createCampaign(
+      title,
+      description,
+      urlImageBanner,
+      urlImagePoster,
+      nftName,
+      nftSymbol,
+      target,
+      duration,
+      { value: ethers.parseEther("0.2") }
+    );
+    const campaigns = await factory.getCampaigns();
+    const campaign = await ethers.getContractAt("Campaign", campaigns[0]);
+    await expect(
+      factory.connect(donor).withdrawFunds(campaign.getAddress(), {value: ethers.parseEther("0.2")})
+    ).to.revertedWith("You are not the owner of this campaign");
+  });
+
+  it("should revert if value is not 0.2 ether", async function () {
+    const [_, owner, donor] = await ethers.getSigners();
+    const title = "MyCampaign";
+    const description = "MyDescription";
+    const urlImagePoster = "MyUrlImagePoster";
+    const urlImageBanner = "MyUrlImageBanner";
+    const nftName = "MyNFT";
+    const nftSymbol = "MNFT";
+    const target = ethers.parseEther("100");
+    const duration = 1; //In giorni
+    // Check that the event was emitted
+    await factory.connect(owner).createCampaign(
+      title,
+      description,
+      urlImageBanner,
+      urlImagePoster,
+      nftName,
+      nftSymbol,
+      target,
+      duration,
+      { value: ethers.parseEther("0.2") }
+    );
+    const campaigns = await factory.getCampaigns();
+    const campaign = await ethers.getContractAt("Campaign", campaigns[0]);
+    await expect(
+      factory.connect(owner).withdrawFunds(campaign.getAddress(), {value: ethers.parseEther("5")})
+    ).to.revertedWith("You need to send exactly 0.2 Ether to withdraw funds");
   });
 
 });

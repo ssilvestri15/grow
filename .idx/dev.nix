@@ -11,6 +11,7 @@
     # pkgs.python311Packages.pip
     # pkgs.nodejs_20
     # pkgs.nodePackages.nodemon
+    #
   ];
 
   # Sets environment variables in the workspace
@@ -19,6 +20,7 @@
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [
       # "vscodevim.vim"
+      "NomicFoundation.hardhat-solidity"
     ];
 
     # Enable previews
@@ -52,4 +54,5 @@
       };
     };
   };
+
 }
