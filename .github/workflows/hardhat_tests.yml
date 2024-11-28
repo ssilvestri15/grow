@@ -1,0 +1,48 @@
+name: Run Hardhat Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.17.0  # Adjust this if needed
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Start Hardhat node in the background
+      - name: Start Hardhat node
+        run: npx hardhat node &
+      
+      # Wait for Hardhat node to be ready
+      - name: Wait for Hardhat node
+        run: |
+          for i in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8545 > /dev/null; then
+              echo "Hardhat node is up!"
+              break
+            fi
+            echo "Waiting for Hardhat node to start..."
+            sleep 1
+          done
+
+      # Run Hardhat tests
+      - name: Run Hardhat tests
+        run: npm test
