@@ -123,10 +123,4 @@ describe("NFT", function () {
         await expect(nftContract.connect(donor2).burn()).to.be.revertedWith("You do not own any token");
     });
 
-    it("Fake test", async function () {
-        await nftContract.setOwner(owner.address);
-        await nftContract.connect(owner).mint(donor.address);
-        await expect(nftContract.connect(donor2).burn()).to.be.revertedWith("");
-    });
-
 });
