@@ -68,7 +68,7 @@ async function main() {
   // Save IP to .env
   const {os, ip} = getWifiIp();
   const envFilePath = path.resolve(__dirname, "../frontend/.env");
-  saveToFile(envFilePath, `REACT_APP_WIFI_IP=${ip}\nREACT_APP_OS=${os}`);
+  
 
   // Get signers
   const signers = await hre.ethers.getSigners();
@@ -83,15 +83,7 @@ async function main() {
   console.log("Crowdfunding Factory deployed to:", factoryAddress);
 
   // Save contract addresses
-  const addressesFilePath = path.resolve(__dirname, "../frontend/src/config/contractAddresses.json");
-  let addresses = {};
-  try {
-    addresses = JSON.parse(fs.readFileSync(addressesFilePath, "utf8"));
-  } catch (error) {
-    console.warn("No existing contract addresses file found. Creating a new one.");
-  }
-  addresses[hre.network.name] = { crowdfundingFactory: factoryAddress };
-  saveToFile(addressesFilePath, JSON.stringify(addresses, null, 2));
+  saveToFile(envFilePath, `REACT_APP_WIFI_IP=${ip}\nREACT_APP_OS=${os}\nREACT_APP_CROWDFUNDING_FACTORY=${factoryAddress}`);
 
   // Deploy campaigns
   const campaignEntries = Object.entries(campaignList);
