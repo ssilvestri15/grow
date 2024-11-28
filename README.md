@@ -1,6 +1,7 @@
 # Grow - Decentralized Crowdfunding Platform
 
 ![Grow Logo](https://github.com/ssilvestri15/grow/blob/main/banner.png)
+![Grow Screenshots](https://github.com/ssilvestri15/grow/blob/main/banner_2.png)
 
 ## Overview
 
@@ -18,7 +19,7 @@ This project is a decentralized crowdfunding platform built on the **Blackhat Bl
 - **Blockchain**: Blackhat Blockchain
 - **Frontend**: React.js
 - **Smart Contracts**: Solidity (or the specific language used on the Blackhat blockchain)
-- **Web3 Integration**: Web3.js / Ethers.js (or a library specific to Blackhat blockchain)
+- **Web3 Integration**: Ethers.js
 
 ## Getting Started
 
@@ -54,23 +55,25 @@ To run this project locally, you need to have the following installed:
    ```
 DON'T close the terminal.
 
+### Test Smart Contracts
+
+1. Run hardhat testing with:
+
+   ```bash
+   npm test
+   ```
+
 ### Smart Contracts
 
 On a new terminal
 
-1. Compile the smart contracts:
+1. Deploy the smart contracts to the Blackhat test network:
 
    ```bash
-   npx hardhat compile
+   npx hardhat run scripts/deploy.js
    ```
 
-2. Deploy the smart contracts to the Blackhat test network:
-
-   ```bash
-   npx hardhat run scripts/deploy.js --network blackhat-testnet
-   ```
-
-3. Update the contract addresses in the React frontend code (`frontend/src/config.js`) to point to your deployed contracts.
+2. Update the contract addresses in the React frontend code (`frontend/src/config.js`) to point to your deployed contracts.
 
 ### Running the Frontend Project
 
@@ -79,7 +82,7 @@ On a new terminal
    ```bash
    cd frontend
    nmp install
-   npm start
+   npm run start
    ```
 
 2. Open your browser and navigate to `http://localhost:3000` to interact with the app.
