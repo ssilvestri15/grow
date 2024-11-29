@@ -47,6 +47,7 @@ export async function getCampaigns() {
     for (let index in campaigns) {
       try {
         const campaignInstance = new ethers.Contract(campaigns[index], campaignABI, provider);
+        console.log(campaignInstance);
         const campaignTitle = await campaignInstance.title();
         const campaignDescription = await campaignInstance.description();
         const campaignBannerUrl = await campaignInstance.imageBannerUrl();

@@ -11,7 +11,7 @@ export const campaignABI = [
     "function startDate() view returns (uint256)",
     "function targetAmount() view returns (uint256)",
     "function currentAmount() view returns (uint256)",
-    "function getUserDonations(address) view returns ((address, uint256, uint256)[])",
+    "function getUserDonations(address) view returns ((uint256, uint256)[])",
     "function getDonorAddresses() view returns (address[])",
     "function donate() payable",
 ]

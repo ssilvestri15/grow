@@ -17,7 +17,7 @@ describe("Campaign", function () {
     // Deploy the CrowdfundingFactory contract
     const CrowdfundingFactory = await ethers.getContractFactory("CrowdfundingFactory");
     factory = await CrowdfundingFactory.deploy();
-    await factory.waitForDeployment()
+    await factory.waitForDeployment();
 
     const title = "MyCampaign";
     const description = "MyDescription";
@@ -179,7 +179,9 @@ describe("Campaign", function () {
       params: [await factory.getAddress()]
     });
     const factorySigner = await ethers.provider.getSigner(await factory.getAddress());
-    await expect(campaign.connect(factorySigner).refundAll())
+    const donorArray = await campaign.getDonorAddresses();
+    const lenght = donorArray.length;
+    await expect(campaign.connect(factorySigner).refundBatch(0, lenght))
       .to.emit(campaign, "RefundAllSuccess")
       .withArgs(campaign.getAddress());
     const donor1BalanceAfter = await ethers.provider.getBalance(donor1.address);
@@ -192,11 +194,15 @@ describe("Campaign", function () {
       params: [await factory.getAddress()]
     });
     const factorySigner = await ethers.provider.getSigner(await factory.getAddress());
-    await expect(campaign.connect(factorySigner).refundAll()).to.be.revertedWith("The campaign is still active");
+    const donorArray = await campaign.getDonorAddresses();
+    const lenght = donorArray.length;
+    await expect(campaign.connect(factorySigner).refundBatch(0, lenght)).to.be.revertedWith("The campaign is still active");
   });
 
   it("should only allow the creator to call refundAll", async function () {
-    await expect(campaign.connect(owner).refundAll()).to.be.revertedWith("Only the creator can call this function");
+    const donorArray = await campaign.getDonorAddresses();
+    const lenght = donorArray.length;
+    await expect(campaign.connect(owner).refundBatch(0, lenght)).to.be.revertedWith("Only the creator can call this function");
   });
 
   /* 
