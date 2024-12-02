@@ -92,6 +92,19 @@ On a new terminal
 1. Open MetaMask and connect to the Blackhat network.
 2. Ensure you have test funds on your account (for testing on the testnet).
 
+### Fund your wallet
+To fund your wallet, follow these steps:
+
+1. Open MetaMask and ensure your wallet is connected.
+2. Copy the wallet address from MetaMask.
+3. Use the following command to fund your wallet:
+
+   ```bash
+   npx hardhat run fundwallet --to YOUR_WALLET_ADDRESS --amount AMOUNT_YO_WANT
+   ```
+   - Replace "YOUR_WALLET_ADDRESS" with the address you copied from MetaMask.
+   - Replace "AMOUNT_YO_WANT" with the needed amount.
+
 ## How It Works
 
 1. **Create Campaign**: Users can create a new crowdfunding campaign by specifying a goal and a deadline.
