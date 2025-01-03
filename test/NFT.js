@@ -17,7 +17,6 @@ describe("NFT", function () {
         const NftFactory = await ethers.getContractFactory("NFTFactory");
         const factory = await NftFactory.deploy();
         await factory.waitForDeployment()
-
         const title = "MyNFT";
         const symbol = "MNFT";
         await expect(await factory.createNFTContract(title, symbol))
@@ -33,6 +32,18 @@ describe("NFT", function () {
         expect(await nftContract.name()).to.equal("MyNFT");
         expect(await nftContract.symbol()).to.equal("MNFT");
     });
+
+    it("Should initialize the NFT contract correctly", async function () {
+        expect(await nftContract.name()).to.equal("MyNFT");
+        expect(await nftContract.symbol()).to.equal("MNFT");
+        expect(await nftContract.contractCreator()).to.equal(creator.address);
+    
+        // Check that it's initialized and cannot be re-initialized
+        await expect(
+            nftContract.initialize("AnotherName", "AN", creator.address)
+        ).to.be.revertedWith("Already initialized");
+    });
+    
 
     /*
     ######################################################

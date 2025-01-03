@@ -9,22 +9,30 @@ contract NFT {
     address public contractOwner;
     mapping(address => bytes32) public tokenOwner;
     mapping(bytes32 => bool) public  tokenExists;
-    
+    bool private initialized; // Prevent double initialization
+
     event Minted(bytes32 token, address owner);
     event Transfer(address from, address to, bytes32 token);
     event Burned(bytes32 token);
 
-    constructor(string memory _name, string memory _symbol, address _contractCreator) {
+
+    constructor() {
+        initialized = false;
+    }
+
+    function initialize(string memory _name, string memory _symbol, address _contractCreator) external {
+        require(!initialized, "Already initialized");
         name = _name;
         symbol = _symbol;
         contractCreator = _contractCreator;
+        initialized = true;
     }
 
     function setOwner(address _contractOwner) external onlyCreator {
         contractOwner = _contractOwner;
     }
 
-    function mint(address to) external onlyOwner{
+    function mint(address to) external onlyOwner {
         require(to != address(0), "Cannot mint to zero address");
         require(tokenOwner[to] == 0, "Recipient already owns a token");
         //generate a random token

@@ -5,14 +5,15 @@ import "./Campaign.sol";
 import "./NFTFactory.sol";
 
 contract CrowdfundingFactory {
-
-    Campaign[] public campaigns;
+    Campaign public immutable campaignImplementation; // Base implementation
     NFTFactory public nftFactory;
-    
+    address[] public campaigns; // Store addresses of campaign proxies
+
     event CampaignCreated(string title);
 
     constructor() {
-        nftFactory = new NFTFactory();
+        campaignImplementation = new Campaign(); // Deploy a single Campaign implementation
+        nftFactory = new NFTFactory(); // Deploy a single NFTFactory instance
     }
 
     function createCampaign(
@@ -35,11 +36,14 @@ contract CrowdfundingFactory {
         require(bytes(_nftName).length > 0, "NFT name must not be empty");
         require(bytes(_nftSymbol).length > 0, "NFT symbol must not be empty");
 
-        // Crea un nuovo contratto NFT per questa campagna
+        // Create a new NFT contract for the campaign
         address nftAddress = nftFactory.createNFTContract(_nftName, _nftSymbol);
 
-        // Crea una nuova campagna con l'indirizzo del contratto NFT
-        Campaign campaign = new Campaign(
+        // Clone the Campaign implementation
+        address campaignProxy = createClone(address(campaignImplementation));
+
+        // Initialize the campaign proxy
+        Campaign(campaignProxy).initialize(
             _title,
             _description,
             msg.sender,
@@ -51,13 +55,12 @@ contract CrowdfundingFactory {
             nftAddress
         );
 
-        campaigns.push(campaign);
-        NFT nft = NFT(nftAddress);
-        nft.setOwner(address(campaign));
+        campaigns.push(campaignProxy);
+        NFT(nftAddress).setOwner(address(campaignProxy));
         emit CampaignCreated(_title);
     }
 
-    function getCampaigns() external view returns (Campaign[] memory) {
+    function getCampaigns() external view returns (address[] memory) {
         return campaigns;
     }
 
@@ -67,5 +70,16 @@ contract CrowdfundingFactory {
         require(msg.value == 0.2 ether, "You need to send exactly 0.2 Ether to withdraw funds");
         campaign.withdrawFunds();
     }
-    
+
+    // EIP-1167 clone function
+    function createClone(address target) internal returns (address result) {
+        bytes20 targetBytes = bytes20(target);
+        assembly {
+            let clone := mload(0x40)
+            mstore(clone, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
+            mstore(add(clone, 0x14), targetBytes)
+            mstore(add(clone, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
+            result := create(0, clone, 0x37)
+        }
+    }
 }

@@ -5,25 +5,27 @@ import "./NFT.sol";
 
 contract Campaign {
 
-    struct Donation {
+      struct Donation {
         uint256 amount;
         uint256 timestamp;
     }
 
     string public title;
     string public description;
-    address public immutable owner;
-    address public immutable creator;
+    address public owner;
+    address public creator;
     string public imageBannerUrl;
     string public imagePosterUrl;
-    uint256 public immutable targetAmount;
-    uint256 public immutable startDate;
-    uint256 public immutable deadline;
-    NFT public immutable nftContract;
+    uint256 public targetAmount;
+    uint256 public startDate;
+    uint256 public deadline;
+    NFT public nftContract;
 
-    mapping(address => Donation[]) private _donations; // Private to minimize gas on external calls
+    mapping(address => Donation[]) private _donations;
     mapping(address => uint256) public totalDonated;
-    address[] private _donorAddresses; // Avoid exposing directly to reduce gas
+    address[] private _donorAddresses;
+
+    bool private initialized; // Prevent double initialization
 
     event Donated(address indexed donor, uint256 amount);
     event FundsWithdrawn(address indexed owner, uint256 amount);
@@ -40,8 +42,12 @@ contract Campaign {
         require(msg.sender == creator, "Only the creator can call this function");
         _;
     }
+    
+    constructor() {
+        initialized = false;
+    }
 
-    constructor(
+    function initialize(
         string memory _title,
         string memory _description,
         address _owner,
@@ -49,9 +55,10 @@ contract Campaign {
         string memory _imageBannerUrl,
         string memory _imagePosterUrl,
         uint256 _targetAmount,
-        uint256 _duration, // Duration in days
+        uint256 _duration,
         address _nftContract
-    ) {
+    ) external {
+        require(!initialized, "Already initialized");
         owner = _owner;
         creator = _creator;
         title = _title;
@@ -62,6 +69,7 @@ contract Campaign {
         startDate = block.timestamp;
         deadline = startDate + (_duration * 1 days);
         nftContract = NFT(_nftContract);
+        initialized = true;
     }
 
     function donate() public payable {

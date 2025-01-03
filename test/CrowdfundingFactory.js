@@ -11,6 +11,7 @@ describe("CrowdfundingFactory", function () {
     CrowdfundingFactory = await ethers.getContractFactory("CrowdfundingFactory");
     // Deploy the CrowdfundingFactory contract
     factory = await CrowdfundingFactory.deploy();
+    await factory.waitForDeployment();
   });
 
   it("should create a Campaign contract", async function () {

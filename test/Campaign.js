@@ -10,8 +10,6 @@ describe("Campaign", function () {
     let owner;
 
   beforeEach(async function () {
-
-
     [owner, donor] = await ethers.getSigners();
 
     // Deploy the CrowdfundingFactory contract
@@ -55,6 +53,30 @@ describe("Campaign", function () {
     const campaignTitle = await campaign.title();
     expect(campaignTitle).to.equal("MyCampaign");
   });
+
+  it("Should initialize the Campaign contract correctly", async function () {
+    const factoryAddress = await factory.getAddress();
+    expect(await campaign.title()).to.equal("MyCampaign");
+    expect(await campaign.description()).to.equal("MyDescription");
+    expect(await campaign.targetAmount()).to.equal(ethers.parseEther("1"));
+    expect(await campaign.owner()).to.equal(owner.address);
+    expect(await campaign.creator()).to.equal(factoryAddress);
+
+    // Ensure the campaign is initialized and cannot be re-initialized
+    await expect(
+        campaign.initialize(
+            "NewTitle", 
+            "NewDescription", 
+            owner.address, 
+            factoryAddress, 
+            "NewBanner", 
+            "NewPoster", 
+            ethers.parseEther("2"), 
+            2, 
+            "0x0000000000000000000000000000000000000001"
+        )
+    ).to.be.revertedWith("Already initialized");
+})
 
   /* 
   ######################################################
