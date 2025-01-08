@@ -1,82 +1,127 @@
 import { ethers } from "ethers";
-import { getCrowdfundingFactoryAddress } from "./Repository"; 
+import { getCrowdfundingFactoryAddress } from "./Repository";
 import { getProvider } from "./Provider";
 import { crowdfundingFactoryABI, campaignABI } from "../config/abiManager";
 
-export async function createCampaign(title, description, imagePosterUrl, imageBannerUrl, nftName, nftSymbol, target, duration) {
+export async function createCampaign(
+  title,
+  description,
+  imagePosterUrl,
+  imageBannerUrl,
+  nftName,
+  nftSymbol,
+  target,
+  duration
+) {
   const [provider, signer] = await getProvider(false);
   if (!provider) {
     throw new Error("Provider not available");
   }
+
   const factoryAddress = getCrowdfundingFactoryAddress();
-  if (factoryAddress === "") {
+  if (!factoryAddress) {
     throw new Error("Factory address not available");
   }
-  console.log(factoryAddress);
+
   const userAddress = await getUserAddress();
-  if (userAddress === null || userAddress === undefined) {
+  if (!userAddress) {
     throw new Error("MetaMask account not found");
   }
-  const factory = new ethers.Contract(factoryAddress, crowdfundingFactoryABI, signer);
+
+  const factory = new ethers.Contract(
+    factoryAddress,
+    crowdfundingFactoryABI,
+    signer
+  );
+
   try {
-    const tx = await factory.createCampaign(title, description, imageBannerUrl, imagePosterUrl, nftName, nftSymbol, ethers.parseEther(target.toString()), duration, { value: ethers.parseEther("0.2") });
+    const tx = await factory.createCampaign(
+      title,
+      description,
+      imageBannerUrl,
+      imagePosterUrl,
+      nftName,
+      nftSymbol,
+      ethers.parseEther(target.toString()),
+      duration,
+      { value: ethers.parseEther("0.2") }
+    );
     await tx.wait();
     return tx.hash;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return "";
   }
 }
 
 export async function getCampaigns() {
-  let campaignsDetails = [];
   const factoryAddress = getCrowdfundingFactoryAddress();
-  if (factoryAddress === "") {
-    console.log("Factory address not available");
+  if (!factoryAddress) {
+    console.error("Factory address not available");
     return [];
-  }
-  const [provider, signer] = await getProvider();
-  if (!provider) {
-    console.log("Provider not available");
-    return [];
-  }
-  const factory = new ethers.Contract(factoryAddress, crowdfundingFactoryABI, provider);
-  try {
-    const campaigns = await factory.getCampaigns();
-    console.log(campaigns);
-    for (let index in campaigns) {
-      try {
-        const campaignInstance = new ethers.Contract(campaigns[index], campaignABI, provider);
-        console.log(campaignInstance);
-        const campaignTitle = await campaignInstance.title();
-        const campaignDescription = await campaignInstance.description();
-        const campaignBannerUrl = await campaignInstance.imageBannerUrl();
-        const campaignPosterUrl = await campaignInstance.imagePosterUrl();
-        const campaignStartDate = await campaignInstance.startDate();
-        const campaignDetails = {
-          address: campaigns[index],
-          title: campaignTitle,
-          description: campaignDescription,
-          bannerUrl: campaignBannerUrl,
-          posterUrl: campaignPosterUrl,
-          startDate: formatTimestamp(campaignStartDate),
-        };
-        campaignsDetails.push(campaignDetails);
-      } catch (error) {
-        console.log(error);
-        continue;
-      }
-    }
-  } catch (error) {
-    console.log(error);
-    campaignsDetails = [];
   }
 
-  return campaignsDetails;
+  const [provider] = await getProvider();
+  if (!provider) {
+    console.error("Provider not available");
+    return [];
+  }
+
+  const factory = new ethers.Contract(
+    factoryAddress,
+    crowdfundingFactoryABI,
+    provider
+  );
+
+  try {
+    const campaigns = await factory.getCampaigns();
+    const campaignDetailsPromises = campaigns.map(async (campaignAddress) => {
+      try {
+        const campaignInstance = new ethers.Contract(
+          campaignAddress,
+          campaignABI,
+          provider
+        );
+
+        // Fetch campaign details concurrently
+        const [
+          title,
+          description,
+          bannerUrl,
+          posterUrl,
+          startDate,
+        ] = await Promise.all([
+          campaignInstance.title(),
+          campaignInstance.description(),
+          campaignInstance.imageBannerUrl(),
+          campaignInstance.imagePosterUrl(),
+          campaignInstance.startDate(),
+        ]);
+
+        return {
+          address: campaignAddress,
+          title,
+          description,
+          bannerUrl,
+          posterUrl,
+          startDate: formatTimestamp(startDate),
+        };
+      } catch (error) {
+        console.error(`Failed to fetch details for ${campaignAddress}`, error);
+        return null; // Skip invalid campaigns
+      }
+    });
+
+    const campaignsDetails = await Promise.all(campaignDetailsPromises);
+    return campaignsDetails.filter(Boolean); // Remove null values
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 function formatTimestamp(timestamp) {
-  const date = new Date(Number(timestamp) * 1000); // Conversione a Number
+  const date = new Date(Number(timestamp) * 1000);
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
@@ -84,11 +129,13 @@ function formatTimestamp(timestamp) {
 }
 
 async function getUserAddress() {
-  const accounts = await window.ethereum.request({
-    method: "eth_requestAccounts",
-  });
-  if (accounts.length === 0) {
+  try {
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    return accounts[0] || null;
+  } catch (error) {
+    console.error("Failed to get user address", error);
     return null;
   }
-  return accounts[0];
 }

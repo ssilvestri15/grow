@@ -14,16 +14,28 @@ export async function getCampaign(address) {
       campaignABI,
       provider
     );
-    const campaignTitle = await campaignInstance.title();
-    const campaignDescription = await campaignInstance.description();
-    const campaignBannerUrl = await campaignInstance.imageBannerUrl();
-    const campaignPosterUrl = await campaignInstance.imagePosterUrl();
-    const campaignStartDate = await campaignInstance.startDate();
-    const campaignTarget = await campaignInstance.targetAmount();
-    const campaignCurrentAmount = await provider.getBalance(address);
-    const [myDonations, otherDonations] = await getDonationSummary(
-      campaignInstance
-    );
+
+    // Fetch campaign data concurrently
+    const [
+      campaignTitle,
+      campaignDescription,
+      campaignBannerUrl,
+      campaignPosterUrl,
+      campaignStartDate,
+      campaignTarget,
+      campaignCurrentAmount,
+      [myDonations, otherDonations],
+    ] = await Promise.all([
+      campaignInstance.title(),
+      campaignInstance.description(),
+      campaignInstance.imageBannerUrl(),
+      campaignInstance.imagePosterUrl(),
+      campaignInstance.startDate(),
+      campaignInstance.targetAmount(),
+      provider.getBalance(address),
+      getDonationSummary(campaignInstance),
+    ]);
+
     campaignDetails = {
       address: address,
       title: campaignTitle,
@@ -45,55 +57,54 @@ export async function getCampaign(address) {
 
 async function getDonationSummary(campaignInstance) {
   try {
-    let myDonations = [];
-    let otherDonations = [];
     const donorAddress = await getUserAddress();
-    if (donorAddress === null || donorAddress === undefined) {
-      myDonations = [];
-    }
-    if (donorAddress) {
-      await fetchTransactions(campaignInstance, donorAddress, (amount, timestamp) => {
-        myDonations.push({
-          donor: donorAddress,
-          amount: ethers.formatEther(amount),
-          timestamp: formatTimestamp(timestamp),
-        });
-      });
-    }
+    const myDonationsPromise = donorAddress
+      ? fetchTransactions(campaignInstance, donorAddress)
+      : Promise.resolve([]);
+
     const donorAddresses = await campaignInstance.getDonorAddresses();
-    const uniqueAddresses = Array.from(new Set(donorAddresses)); // Remove duplicates and convert to array
+    const uniqueAddresses = Array.from(new Set(donorAddresses));
     const maxDonations = Math.min(uniqueAddresses.length, 10);
-    let processedDonations = 0;
-    for (const address of uniqueAddresses) {
-      if (processedDonations >= maxDonations) break;
-      if (donorAddress && address.trim().toUpperCase() === donorAddress.trim().toUpperCase()) {
-        continue;
-      }
-      await fetchTransactions(campaignInstance, address, (amount, timestamp) => {
-        otherDonations.push({
-          donor: String(address),
-          amount: ethers.formatEther(amount),
-          timestamp: formatTimestamp(timestamp),
-        });
-        processedDonations++;
-      });
-    }
-    return [myDonations, otherDonations];
+
+    const otherDonationsPromise = Promise.all(
+      uniqueAddresses
+        .filter(
+          (address) =>
+            !donorAddress ||
+            address.trim().toUpperCase() !== donorAddress.trim().toUpperCase()
+        )
+        .slice(0, maxDonations)
+        .map((address) =>
+          fetchTransactions(campaignInstance, address).then((transactions) =>
+            transactions.map((transaction) => ({
+              donor: String(address),
+              ...transaction,
+            }))
+          )
+        )
+    );
+
+    const [myDonations, otherDonationsArray] = await Promise.all([
+      myDonationsPromise,
+      otherDonationsPromise,
+    ]);
+
+    return [myDonations, otherDonationsArray.flat()];
   } catch (error) {
     return [[], []];
   }
 }
 
-async function fetchTransactions(campaignInstance, donorAddress, doThing) {
+async function fetchTransactions(campaignInstance, donorAddress) {
   const donationArray = await campaignInstance.getUserDonations(donorAddress);
-  donationArray.forEach((donation) => {
-    const [amount, timestamp] = donation;
-    doThing(amount, timestamp);
-  });  
+  return donationArray.map(([amount, timestamp]) => ({
+    amount: ethers.formatEther(amount),
+    timestamp: formatTimestamp(timestamp),
+  }));
 }
 
 function formatTimestamp(timestamp) {
-  const date = new Date(Number(timestamp) * 1000); // Conversione a Number
+  const date = new Date(Number(timestamp) * 1000);
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
@@ -105,10 +116,7 @@ async function getUserAddress() {
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
-    if (accounts === null || accounts === undefined || accounts.length === 0) {
-      return null;
-    }
-    return accounts[0];
+    return accounts?.[0] || null;
   } catch (error) {
     return null;
   }
@@ -120,7 +128,7 @@ export async function donate(address, amount) {
     throw new Error("Provider not available");
   }
   const userAddress = await getUserAddress();
-  if (userAddress === null || userAddress === undefined) {
+  if (!userAddress) {
     throw new Error("MetaMask account not found");
   }
   try {
