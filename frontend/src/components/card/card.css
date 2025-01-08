@@ -43,6 +43,10 @@
   font-size: 2vw;
   color: black;
   margin: 0px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap; /* Add this */
+  width: 100%; /* Ensure there's a defined width */
 }
 
 .tier_price {

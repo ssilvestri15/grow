@@ -125,7 +125,7 @@ contract Campaign {
         return _donorAddresses;
     }
 
-    function getNftContract() external view onlyOwner returns (address) {
+    function getNftContract() external view returns (address) {
         return address(nftContract);
     }
 }

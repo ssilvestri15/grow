@@ -5,7 +5,7 @@ import IndefiniteProgressBar from "../circlepb/IndefiniteProgressBar";
 import {ButtonDonation} from "../btn_dona/ButtonDonation";
 import { isMetaMaskInstalled } from "../../utils/Provider";
 
-export function ToolbarButton({symbol, text, whenClicked }) {
+export function ToolbarButton({symbol, text, whenClicked}) {
   return (
     <div className="btn_div" onClick={whenClicked}>
       <span class="material-symbols-outlined">{symbol}</span>
@@ -14,7 +14,7 @@ export function ToolbarButton({symbol, text, whenClicked }) {
   );
 }
 
-function Toolbar({symbol, text, whenClicked }) {
+function Toolbar({symbol, text, whenClicked, whenUserClicked}) {
   return (
     <div className="toolbar">
       <a className="logo_title">Grow</a>
@@ -24,6 +24,7 @@ function Toolbar({symbol, text, whenClicked }) {
           <ToolbarButton symbol={symbol} text={text} whenClicked={whenClicked}/>
         ) : null
       }
+      <span class="material-symbols-outlined" onClick={whenUserClicked}>manage_accounts</span>
     </div>
   );
 }

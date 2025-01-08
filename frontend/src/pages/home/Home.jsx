@@ -18,6 +18,10 @@ function Home() {
   const [loading, setLoading] = useState(true);
 
   let navigate = useNavigate();
+  const handleProfileClick = () => {
+    let path = `/profile`; 
+    navigate(path);
+  };
   const handleCreateClick = () => {
     let path = `/create`; 
     navigate(path);
@@ -30,14 +34,6 @@ function Home() {
     async function fetchCampaigns() {
       try {
         setLoading(true);
-        /*const response = await axios.get(`http://${process.env.REACT_APP_WIFI_IP}:3001/api/getcampaigns/`);
-        let campaignsData = [];
-        console.log(response);
-        if (response.status !== 200) {
-          campaignsData = [];
-        } else {
-          campaignsData = response.data;
-        }*/
         const campaignsData = await getCampaigns();
         setCampaignsListSlide(campaignsData.slice(0, Math.min(3, campaignsData.length)));
         setCampaignsListMost(campaignsData.slice(Math.min(3, campaignsData.length)));
@@ -55,7 +51,7 @@ function Home() {
   return (
     <div className="App">
       <div className="carousel-page">
-          <Toolbar text="New Crowdfunding" symbol="add" whenClicked={()=>{handleCreateClick()}}/>
+          <Toolbar text="New Crowdfunding" symbol="add" whenClicked={()=>{handleCreateClick()}} whenUserClicked={()=>{handleProfileClick()}}/>
           { loading ? (
             <IndefiniteProgressBar width={64} height={64} stroke={6} color="#141414" />
           ) : (

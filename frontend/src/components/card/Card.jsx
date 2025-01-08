@@ -29,3 +29,28 @@ export function ContributionCard({ donorAddress, amount }) {
         </div>
     )
 }
+
+export function ContributionCardInfo({ title, address, amount }) {
+    return (
+        <div className="contribution_card">
+            <div className="left_c">
+                <p className="tier_name">{title}</p>
+                <p className="tier_description">{address}</p>
+            </div>
+            <div className="right_c">
+                <p className="tier_price">{amount} ETH</p>
+            </div>
+        </div>
+    )
+}
+
+export function TokenCardInfo({ token, title }) {
+    return (
+        <div className="contribution_card">
+            <div className="left_c">
+                <p className="tier_name">{token}</p>
+                <p className="tier_description">{title}</p>
+            </div>
+        </div>
+    )
+}

@@ -6,6 +6,7 @@ import Home from './pages/home/Home';
 import Landing from './pages/landing/Landing';
 import Details from './pages/details/Details';
 import CreateCampaign from './pages/create/CreateCampaign';
+import Profile from './pages/profile/Profile';
 import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter([
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: "/create",
     element: <CreateCampaign />, //Want to pass the address to the Details component
+  },
+  {
+    path: "/profile",
+    element: <Profile />, //Want to pass the address to the Details component
   },
 ]);
 

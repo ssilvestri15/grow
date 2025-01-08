@@ -63,6 +63,11 @@ contract NFT {
         emit Burned(token);
     }
 
+    function getNFTToken(address userAddress) external view returns (bytes32) {
+        require(tokenOwner[userAddress] != 0, "User do not own any token");
+        return tokenOwner[userAddress];
+    }
+
     modifier onlyOwner() {
         require(contractOwner == msg.sender, "Caller can't create NFT");
         _;   

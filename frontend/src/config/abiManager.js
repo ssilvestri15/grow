@@ -5,6 +5,7 @@ export const crowdfundingFactoryABI = [
 
 export const campaignABI = [
     "function title() view returns (string)",
+    "function owner() view returns (address)",
     "function description() view returns (string)",
     "function imageBannerUrl() view returns (string)",
     "function imagePosterUrl() view returns (string)",
@@ -13,5 +14,10 @@ export const campaignABI = [
     "function currentAmount() view returns (uint256)",
     "function getUserDonations(address) view returns ((uint256, uint256)[])",
     "function getDonorAddresses() view returns (address[])",
+    "function getNftContract() view returns (address)",
     "function donate() payable",
+]
+
+export const nftABI = [
+    "function getNFTToken(address) view returns (bytes32)",
 ]
