@@ -185,47 +185,89 @@ describe("Campaign", function () {
   });
 
     
-  /* 
-  ####################################################################
-  ###################### refundAll ######################
-  ####################################################################
-  */
-  it("should refund all donors if called by the creator after the deadline", async function () {
-    const [_, __, donor1] = await ethers.getSigners();
-    const donationAmount = ethers.parseEther("2");
-    await campaign.connect(donor1).donate({ value: donationAmount });
-    const donor1BalanceBefore = await ethers.provider.getBalance(donor1.address);
-    await ethers.provider.send("evm_increaseTime", [2*86400]); // add 2 days
-    await network.provider.request({
-      method: "hardhat_impersonateAccount",
-      params: [await factory.getAddress()]
-    });
-    const factorySigner = await ethers.provider.getSigner(await factory.getAddress());
-    const donorArray = await campaign.getDonorAddresses();
-    const lenght = donorArray.length;
-    await expect(campaign.connect(factorySigner).refundBatch(0, lenght))
-      .to.emit(campaign, "RefundAllSuccess")
-      .withArgs(campaign.getAddress());
-    const donor1BalanceAfter = await ethers.provider.getBalance(donor1.address);
-    expect(donor1BalanceAfter).to.be.above(donor1BalanceBefore);
-  });
+/* 
+####################################################################
+######################## requestRefund ########################
+####################################################################
+*/
 
-  it("should fail if called before the deadline", async function () {
-    await network.provider.request({
-      method: "hardhat_impersonateAccount",
-      params: [await factory.getAddress()]
-    });
-    const factorySigner = await ethers.provider.getSigner(await factory.getAddress());
-    const donorArray = await campaign.getDonorAddresses();
-    const lenght = donorArray.length;
-    await expect(campaign.connect(factorySigner).refundBatch(0, lenght)).to.be.revertedWith("The campaign is still active");
-  });
+it("should allow a donor to claim a refund after the deadline if target is not reached", async function () {
+  const [_, __, donor1] = await ethers.getSigners();
+  const donationAmount = ethers.parseEther("0.5");
 
-  it("should only allow the creator to call refundAll", async function () {
-    const donorArray = await campaign.getDonorAddresses();
-    const lenght = donorArray.length;
-    await expect(campaign.connect(owner).refundBatch(0, lenght)).to.be.revertedWith("Only the creator can call this function");
-  });
+  // Donor1 makes a donation
+  await campaign.connect(donor1).donate({ value: donationAmount });
+
+  // Simulate passing the deadline
+  await ethers.provider.send("evm_increaseTime", [2 * 86400]); // add 2 days
+  await ethers.provider.send("evm_mine", []);
+
+  // Verify the donor's balance before requesting refund
+  const donor1BalanceBefore = await ethers.provider.getBalance(donor1.address);
+
+  // Donor1 requests a refund
+  await expect(await campaign.connect(donor1).requestRefund()).to.emit(campaign, "RefundClaimed").withArgs(donor1.address, donationAmount);
+
+  // Verify the donor's balance after requesting refund
+  const donor1BalanceAfter = await ethers.provider.getBalance(donor1.address);
+  expect(donor1BalanceAfter).to.be.above(donor1BalanceBefore);
+});
+
+it("should fail if a donor tries to request a refund before the deadline", async function () {
+  const [_, __, donor1] = await ethers.getSigners();
+  const donationAmount = ethers.parseEther("2");
+
+  // Donor1 makes a donation
+  await campaign.connect(donor1).donate({ value: donationAmount });
+
+  // Donor1 attempts to request a refund before the deadline
+  await expect(campaign.connect(donor1).requestRefund()).to.be.revertedWith("The campaign is still active");
+});
+
+it("should fail if the target amount is reached", async function () {
+  const [_, __, donor1, donor2] = await ethers.getSigners();
+  const donationAmount = ethers.parseEther("5"); // Assume target amount is 10 ETH
+
+  // Donor1 and Donor2 make donations that reach the target
+  await campaign.connect(donor1).donate({ value: donationAmount });
+  await campaign.connect(donor2).donate({ value: donationAmount });
+
+  // Simulate passing the deadline
+  await ethers.provider.send("evm_increaseTime", [2 * 86400]); // add 2 days
+  await ethers.provider.send("evm_mine", []);
+
+  // Donor1 attempts to request a refund after the target is reached
+  await expect(campaign.connect(donor1).requestRefund()).to.be.revertedWith("Target reached, refund not allowed");
+});
+
+it("should fail if a donor tries to request a refund twice", async function () {
+  const [_, __, donor1] = await ethers.getSigners();
+  const donationAmount = ethers.parseEther("0.5");
+
+  // Donor1 makes a donation
+  await campaign.connect(donor1).donate({ value: donationAmount });
+
+  // Simulate passing the deadline
+  await ethers.provider.send("evm_increaseTime", [2 * 86400]); // add 2 days
+  await ethers.provider.send("evm_mine", []);
+
+  // Donor1 requests a refund
+  await expect(await campaign.connect(donor1).requestRefund()).to.emit(campaign, "RefundClaimed").withArgs(donor1.address, donationAmount);
+
+  // Donor1 attempts to request a refund again
+  await expect(campaign.connect(donor1).requestRefund()).to.be.revertedWith("Refund already requested");
+});
+
+it("should fail if a non-donor tries to request a refund", async function () {
+  const [_, __, nonDonor] = await ethers.getSigners();
+
+  // Simulate passing the deadline
+  await ethers.provider.send("evm_increaseTime", [2 * 86400]); // add 2 days
+  await ethers.provider.send("evm_mine", []);
+
+  // Non-donor attempts to request a refund
+  await expect(campaign.connect(nonDonor).requestRefund()).to.be.revertedWith("Nothing to refund");
+});
 
   /* 
   ##############################################################

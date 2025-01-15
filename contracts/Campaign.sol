@@ -23,15 +23,15 @@ contract Campaign {
 
     mapping(address => Donation[]) private _donations;
     mapping(address => uint256) public totalDonated;
+    mapping(address => uint256) private refundedAmounts;
     address[] private _donorAddresses;
 
     bool private initialized; // Prevent double initialization
 
     event Donated(address indexed donor, uint256 amount);
     event FundsWithdrawn(address indexed owner, uint256 amount);
-    event RefundFailed(address indexed donor, uint256 amount, string reason);
     event CampaignClosed(string title);
-    event RefundAllSuccess(address indexed campaignAddress);
+    event RefundClaimed(address indexed donor, uint256 amount);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
@@ -98,23 +98,15 @@ contract Campaign {
         emit FundsWithdrawn(owner, amount);
     }
 
-    function refundBatch(uint256 start, uint256 end) external onlyCreator {
-        require(block.timestamp >= deadline, "The campaign is still active");
+    function requestRefund() external {
+        require(block.timestamp > deadline, "The campaign is still active");
+        require(address(this).balance <= targetAmount, "Target reached, refund not allowed");
+        require(totalDonated[msg.sender] > 0, "Nothing to refund");
+        require(refundedAmounts[msg.sender] == 0, "Refund already requested");
 
-        for (uint256 i = start; i < end && i < _donorAddresses.length; i++) {
-            address donor = _donorAddresses[i];
-            uint256 amountToRefund = totalDonated[donor];
-            if (amountToRefund > 0) {
-                totalDonated[donor] = 0;
-                (bool sent, ) = payable(donor).call{value: amountToRefund}("");
-                if (!sent) {
-                    totalDonated[donor] = amountToRefund; // Revert state if refund fails
-                    emit RefundFailed(donor, amountToRefund, "");
-                }
-            }
-        }
-
-        emit RefundAllSuccess(address(this));
+        refundedAmounts[msg.sender] = totalDonated[msg.sender];
+        payable(msg.sender).transfer(refundedAmounts[msg.sender]);
+        emit RefundClaimed(msg.sender, refundedAmounts[msg.sender]);
     }
 
     function getUserDonations(address userAddress) external view returns (Donation[] memory) {
