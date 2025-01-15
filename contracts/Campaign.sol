@@ -24,6 +24,7 @@ contract Campaign {
     mapping(address => Donation[]) private _donations;
     mapping(address => uint256) public totalDonated;
     mapping(address => uint256) private refundedAmounts;
+    uint256 private amountReached;
     address[] private _donorAddresses;
 
     bool private initialized; // Prevent double initialization
@@ -47,6 +48,7 @@ contract Campaign {
     constructor() {
         initialized = false;
         withdrawn = false;
+        amountReached = 0;
     }
 
     function initialize(
@@ -83,6 +85,7 @@ contract Campaign {
             nftContract.mint(msg.sender); // Mint NFT only for first-time donors
         }
 
+        amountReached += msg.value;
         totalDonated[msg.sender] += msg.value;
         _donations[msg.sender].push(Donation({amount: msg.value, timestamp: block.timestamp}));
 
@@ -92,7 +95,7 @@ contract Campaign {
     function withdrawFunds() external onlyCreator {
         require(!withdrawn, "Funds have already been withdrawn");
         require(block.timestamp > deadline, "The campaign is still active");
-        require(address(this).balance >= targetAmount, "Target amount not reached");
+        require(amountReached >= targetAmount, "Target amount not reached");
 
         uint256 amount = address(this).balance;
         withdrawn = true;
