@@ -27,6 +27,7 @@ contract Campaign {
     address[] private _donorAddresses;
 
     bool private initialized; // Prevent double initialization
+    bool private withdrawn;
 
     event Donated(address indexed donor, uint256 amount);
     event FundsWithdrawn(address indexed owner, uint256 amount);
@@ -45,6 +46,7 @@ contract Campaign {
     
     constructor() {
         initialized = false;
+        withdrawn = false;
     }
 
     function initialize(
@@ -88,12 +90,13 @@ contract Campaign {
     }
 
     function withdrawFunds() external onlyCreator {
-        require(block.timestamp >= deadline, "The campaign is still active");
+        require(!withdrawn, "Funds have already been withdrawn");
+        require(block.timestamp > deadline, "The campaign is still active");
         require(address(this).balance >= targetAmount, "Target amount not reached");
 
         uint256 amount = address(this).balance;
-        (bool success, ) = payable(owner).call{value: amount}("");
-        require(success, "Transfer failed");
+        withdrawn = true;
+        payable(owner).transfer(amount);
 
         emit FundsWithdrawn(owner, amount);
     }

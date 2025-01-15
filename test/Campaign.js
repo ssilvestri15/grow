@@ -184,6 +184,19 @@ describe("Campaign", function () {
     })).to.be.revertedWith("You need to send exactly 0.2 Ether to withdraw funds");
   });
 
+  it("Should revert if the funds have already been withdrawn", async function () {
+    const tax = ethers.parseEther("0.2");
+    const donationAmount = ethers.parseEther("2");
+    await campaign.connect(donor).donate({ value: donationAmount });
+    await ethers.provider.send("evm_increaseTime", [2*86400]);
+    await expect(
+      factory.connect(owner).withdrawFunds(campaign.getAddress(), {value: tax})
+    ).to.emit(campaign, "FundsWithdrawn").withArgs(owner.address, ethers.parseEther("2"));
+    await expect(
+      factory.connect(owner).withdrawFunds(campaign.getAddress(), {value: tax})
+    ).to.be.revertedWith("Funds have already been withdrawn");
+  });
+
     
 /* 
 ####################################################################
