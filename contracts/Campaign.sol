@@ -99,7 +99,9 @@ contract Campaign {
 
         uint256 amount = address(this).balance;
         withdrawn = true;
-        payable(owner).transfer(amount);
+
+        (bool success, ) = payable(owner).call{value: amount}("");
+        require(success, "Withdrawal failed");
 
         emit FundsWithdrawn(owner, amount);
     }
@@ -111,7 +113,10 @@ contract Campaign {
         require(refundedAmounts[msg.sender] == 0, "Refund already requested");
 
         refundedAmounts[msg.sender] = totalDonated[msg.sender];
-        payable(msg.sender).transfer(refundedAmounts[msg.sender]);
+
+        (bool success, ) = payable(msg.sender).call{value: refundedAmounts[msg.sender]}("");
+        require(success, "Refund failed");
+        
         emit RefundClaimed(msg.sender, refundedAmounts[msg.sender]);
     }
 
